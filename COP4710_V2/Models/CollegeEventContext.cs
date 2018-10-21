@@ -22,6 +22,7 @@ namespace COP4710_V2.Models
         public virtual DbSet<AspNetUserRoles> AspNetUserRoles { get; set; }
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
         public virtual DbSet<AspNetUserTokens> AspNetUserTokens { get; set; }
+        public virtual DbSet<Events> Events { get; set; }
         public virtual DbSet<Hello> Hello { get; set; }
         public virtual DbSet<Students> Students { get; set; }
         public virtual DbSet<UserMessages> UserMessages { get; set; }
@@ -140,6 +141,57 @@ namespace COP4710_V2.Models
                     .HasForeignKey(d => d.UserId);
             });
 
+            modelBuilder.Entity<Events>(entity =>
+            {
+                entity.HasKey(e => e.Eid);
+
+                entity.Property(e => e.Eid)
+                    .HasColumnName("EID")
+                    .HasColumnType("numeric(18, 0)")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Category)
+                    .HasColumnName("CATEGORY")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Date)
+                    .HasColumnName("DATE")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.Description)
+                    .HasColumnName("DESCRIPTION")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Email)
+                    .HasColumnName("EMAIL")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Location)
+                    .HasColumnName("LOCATION")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Name)
+                    .HasColumnName("NAME")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Phone)
+                    .HasColumnName("PHONE")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Time).HasColumnName("TIME");
+
+                entity.Property(e => e.Type)
+                    .HasColumnName("TYPE")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
+
             modelBuilder.Entity<Hello>(entity =>
             {
                 entity.HasKey(e => e.Test);
@@ -167,8 +219,6 @@ namespace COP4710_V2.Models
 
             modelBuilder.Entity<UserMessages>(entity =>
             {
-                entity.ToTable("user_messages");
-
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.From)

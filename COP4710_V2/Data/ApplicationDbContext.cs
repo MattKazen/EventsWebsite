@@ -14,5 +14,6 @@ namespace COP4710_V2.Data
         {
         }
         public DbSet<COP4710_V2.Models.UserMessages> UserMessages { get; set; }
+        public DbSet<COP4710_V2.Models.Events> Events { get; set; }
     }
 }
