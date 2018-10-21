@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using COP4710_V2.Models;
 
 namespace COP4710_V2.Data
 {
@@ -12,5 +13,6 @@ namespace COP4710_V2.Data
             : base(options)
         {
         }
+        public DbSet<COP4710_V2.Models.UserMessages> UserMessages { get; set; }
     }
 }
