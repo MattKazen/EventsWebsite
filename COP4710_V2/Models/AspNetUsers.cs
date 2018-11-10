@@ -11,7 +11,8 @@ namespace COP4710_V2.Models
             AspNetUserLogins = new HashSet<AspNetUserLogins>();
             AspNetUserRoles = new HashSet<AspNetUserRoles>();
             AspNetUserTokens = new HashSet<AspNetUserTokens>();
-            
+            Comments = new HashSet<Comments>();
+            CreatesUni = new HashSet<CreatesUni>();
         }
 
         public string Id { get; set; }
@@ -30,12 +31,13 @@ namespace COP4710_V2.Models
         public bool LockoutEnabled { get; set; }
         public int AccessFailedCount { get; set; }
 
-        public Admin Admin { get; set; }
-        public Superadmin Superadmin { get; set; }
+        public Admins Admins { get; set; }
+        public Superadmins Superadmins { get; set; }
         public ICollection<AspNetUserClaims> AspNetUserClaims { get; set; }
         public ICollection<AspNetUserLogins> AspNetUserLogins { get; set; }
         public ICollection<AspNetUserRoles> AspNetUserRoles { get; set; }
         public ICollection<AspNetUserTokens> AspNetUserTokens { get; set; }
-        
+        public ICollection<Comments> Comments { get; set; }
+        public ICollection<CreatesUni> CreatesUni { get; set; }
     }
 }

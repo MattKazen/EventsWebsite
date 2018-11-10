@@ -5,13 +5,16 @@ namespace COP4710_V2.Models
 {
     public partial class Rso
     {
-        public string Rsoid { get; set; }
-        public string Name { get; set; }
-        public string AdminId { get; set; }
-        public string Descr { get; set; }
-        public int? Size { get; set; }
+        public Rso()
+        {
+            RsoCreatesEvents = new HashSet<RsoCreatesEvents>();
+            RsoEvents = new HashSet<RsoEvents>();
+        }
 
-        public Rso RsoNavigation { get; set; }
-        public Rso InverseRsoNavigation { get; set; }
+        public int RsoId { get; set; }
+        public int? NumUsers { get; set; }
+
+        public ICollection<RsoCreatesEvents> RsoCreatesEvents { get; set; }
+        public ICollection<RsoEvents> RsoEvents { get; set; }
     }
 }

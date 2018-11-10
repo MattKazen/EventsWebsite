@@ -8,15 +8,13 @@ namespace COP4710_V2.Models
         public University()
         {
             CreatesUni = new HashSet<CreatesUni>();
-            
         }
 
-        public int Unid { get; set; }
-        public string Locat { get; set; }
-        public string Descr { get; set; }
-        public int? Students { get; set; }
+        public string UniName { get; set; }
+        public string UniDesc { get; set; }
+        public string UniLocation { get; set; }
+        public int? NumStudents { get; set; }
 
         public ICollection<CreatesUni> CreatesUni { get; set; }
-        
     }
 }
