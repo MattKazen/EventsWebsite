@@ -35,7 +35,7 @@ namespace COP4710_V2
             });
 
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(@"server=cop4710.database.windows.net;database=College Event;uid=dbadmin;pwd=Ucfdbs!!"));
+                options.UseSqlServer(@"server=cop4017-2.database.windows.net;database=University Event;uid=dbadmin;pwd=Ucfdbs!!"));
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 

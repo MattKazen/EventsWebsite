@@ -15,6 +15,7 @@ namespace COP4710_V2.Models
         {
         }
 
+        public virtual DbSet<Admin> Admin { get; set; }
         public virtual DbSet<AspNetRoleClaims> AspNetRoleClaims { get; set; }
         public virtual DbSet<AspNetRoles> AspNetRoles { get; set; }
         public virtual DbSet<AspNetUserClaims> AspNetUserClaims { get; set; }
@@ -22,11 +23,12 @@ namespace COP4710_V2.Models
         public virtual DbSet<AspNetUserRoles> AspNetUserRoles { get; set; }
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
         public virtual DbSet<AspNetUserTokens> AspNetUserTokens { get; set; }
+        public virtual DbSet<CreatesUni> CreatesUni { get; set; }
         public virtual DbSet<Events> Events { get; set; }
-        public virtual DbSet<Hello> Hello { get; set; }
-        public virtual DbSet<Students> Students { get; set; }
-        public virtual DbSet<UserMessages> UserMessages { get; set; }
-        public virtual DbSet<Users> Users { get; set; }
+        public virtual DbSet<Rso> Rso { get; set; }
+        public virtual DbSet<Superadmin> Superadmin { get; set; }
+        public virtual DbSet<University> University { get; set; }
+        
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -39,6 +41,19 @@ namespace COP4710_V2.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Admin>(entity =>
+            {
+                entity.ToTable("admin");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.HasOne(d => d.IdNavigation)
+                    .WithOne(p => p.Admin)
+                    .HasForeignKey<Admin>(d => d.Id)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__admin__Id__498EEC8D");
+            });
+
             modelBuilder.Entity<AspNetRoleClaims>(entity =>
             {
                 entity.HasIndex(e => e.RoleId);
@@ -141,6 +156,29 @@ namespace COP4710_V2.Models
                     .HasForeignKey(d => d.UserId);
             });
 
+            modelBuilder.Entity<CreatesUni>(entity =>
+            {
+                entity.HasKey(e => new { e.Id, e.Unid });
+
+                entity.ToTable("creates_uni");
+
+                entity.Property(e => e.Unid).HasColumnName("unid");
+
+                entity.HasOne(d => d.IdNavigation)
+                    .WithMany(p => p.CreatesUni)
+                    .HasForeignKey(d => d.Id)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__creates_uni__Id__531856C7");
+
+                entity.HasOne(d => d.Un)
+                    .WithMany(p => p.CreatesUni)
+                    .HasForeignKey(d => d.Unid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__creates_un__unid__540C7B00");
+            });
+
+            
+
             modelBuilder.Entity<Events>(entity =>
             {
                 entity.HasKey(e => e.Eid);
@@ -192,66 +230,75 @@ namespace COP4710_V2.Models
                     .IsUnicode(false);
             });
 
-            modelBuilder.Entity<Hello>(entity =>
+            modelBuilder.Entity<Rso>(entity =>
             {
-                entity.HasKey(e => e.Test);
+                entity.ToTable("RSO");
 
-                entity.Property(e => e.Test)
-                    .HasColumnName("test")
+                entity.Property(e => e.Rsoid)
+                    .HasColumnName("rsoid")
                     .HasMaxLength(10)
+                    .IsUnicode(false)
                     .ValueGeneratedNever();
-            });
 
-            modelBuilder.Entity<Students>(entity =>
-            {
-                entity.HasKey(e => e.StudentId);
-
-                entity.Property(e => e.StudentId)
-                    .HasColumnName("StudentID")
-                    .HasColumnType("numeric(18, 0)");
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(10);
-
-                entity.Property(e => e.NumClasses).HasColumnType("numeric(18, 0)");
-            });
-
-            modelBuilder.Entity<UserMessages>(entity =>
-            {
-                entity.Property(e => e.Id).HasColumnName("ID");
-
-                entity.Property(e => e.From)
-                    .HasColumnName("from")
-                    .HasMaxLength(450)
+                entity.Property(e => e.AdminId)
+                    .HasColumnName("admin_id")
+                    .HasMaxLength(10)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Message)
-                    .IsRequired()
-                    .HasColumnName("message")
+                entity.Property(e => e.Descr)
+                    .HasColumnName("descr")
                     .HasMaxLength(50)
                     .IsUnicode(false);
+
+                entity.Property(e => e.Name)
+                    .HasColumnName("name")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Size).HasColumnName("size");
+
+                entity.HasOne(d => d.RsoNavigation)
+                    .WithOne(p => p.InverseRsoNavigation)
+                    .HasForeignKey<Rso>(d => d.Rsoid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_RSO_RSO");
             });
 
-            modelBuilder.Entity<Users>(entity =>
+            modelBuilder.Entity<Superadmin>(entity =>
             {
-                entity.HasKey(e => e.Ssn);
+                entity.ToTable("superadmin");
 
-                entity.Property(e => e.Ssn)
-                    .HasColumnName("ssn")
-                    .HasMaxLength(10)
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.HasOne(d => d.IdNavigation)
+                    .WithOne(p => p.Superadmin)
+                    .HasForeignKey<Superadmin>(d => d.Id)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__superadmin__Id__4C6B5938");
+            });
+
+            modelBuilder.Entity<University>(entity =>
+            {
+                entity.HasKey(e => e.Unid);
+
+                entity.Property(e => e.Unid)
+                    .HasColumnName("unid")
                     .ValueGeneratedNever();
 
-                entity.Property(e => e.Domain)
-                    .IsRequired()
-                    .HasMaxLength(10);
+                entity.Property(e => e.Descr)
+                    .HasColumnName("descr")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.Password)
-                    .IsRequired()
-                    .HasMaxLength(10);
+                entity.Property(e => e.Locat)
+                    .HasColumnName("locat")
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.Username).HasMaxLength(10);
+                entity.Property(e => e.Students).HasColumnName("students");
             });
+
+            
         }
     }
 }

@@ -13,7 +13,7 @@ namespace COP4710_V2.Data
             : base(options)
         {
         }
-        public DbSet<COP4710_V2.Models.UserMessages> UserMessages { get; set; }
-        public DbSet<COP4710_V2.Models.Events> Events { get; set; }
+        //public DbSet<COP4710_V2.Models.Events> Events { get; set; }
+        //this killed the register function when launching the website.
     }
 }
