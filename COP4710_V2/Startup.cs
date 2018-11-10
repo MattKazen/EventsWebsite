@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using COP4710_V2.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using COP4710_V2.Models;
 
 namespace COP4710_V2
 {
@@ -34,10 +35,10 @@ namespace COP4710_V2
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddDbContext<ApplicationDbContext>(options =>
+            services.AddDbContext<UniversityEventContext>(options =>
                 options.UseSqlServer(@"server=cop4017-2.database.windows.net;database=University Event;uid=dbadmin;pwd=Ucfdbs!!"));
             services.AddDefaultIdentity<IdentityUser>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<UniversityEventContext>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
