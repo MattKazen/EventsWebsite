@@ -13,6 +13,7 @@ using COP4710_V2.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using COP4710_V2.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace COP4710_V2
 {
@@ -38,9 +39,12 @@ namespace COP4710_V2
             services.AddDbContext<Data.UniversityEventContext>(options =>
                 options.UseSqlServer(@"server=cop4017-2.database.windows.net;database=University Event;uid=dbadmin;pwd=Ucfdbs!!"));
 
-            services.AddDefaultIdentity<IdentityUser>()
-                .AddEntityFrameworkStores<Data.UniversityEventContext>();
+			services.AddDefaultIdentity<IdentityUser>()
+						   .AddEntityFrameworkStores<Data.UniversityEventContext>();
 
+		//	var rm = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new Models.UniversityEventContext()));
+
+			
 			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddScoped<Models.UniversityEventContext>();
         }

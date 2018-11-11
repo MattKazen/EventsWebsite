@@ -56,9 +56,11 @@ namespace COP4710_V2.Controllers
             String Query = "Select Id From AspNetUsers Where Email = '" + userEmail + "'";
 
 			DataTable table = GetDataFromQuery(Query);
-
-			String UserID = table.Rows[0][0].ToString();
-			ViewBag.UserID = UserID;
+			
+			if(User.Identity.IsAuthenticated)
+				ViewBag.UserID = table.Rows[0][0].ToString();
+			else
+				ViewBag.UserID = "Not Signed In!";
 		}
 
 		// Directs user to /Views/Home/ShowAdmins where
@@ -75,10 +77,13 @@ namespace COP4710_V2.Controllers
 
 			//If the Current UserID is not in the list of admins then return to previous view
 			if (!AdminList.Contains(ViewBag.UserID))
-				return null;
-
-			
-			return View();
+			{
+				var skeet = "skeet";
+				return View();
+			}
+			//Something for when user is not signed in
+			else
+				return View();
 		}
 
 		

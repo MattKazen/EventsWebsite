@@ -1,0 +1,47 @@
+﻿@model IEnumerable<COP4710_V2.Models.University>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+<table class="table">
+    <thead>
+		<tr>
+			<th>
+				@Html.DisplayNameFor(model => model.UniName)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.UniDesc)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.UniLocation)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.NumStudents)
+			</th>
+			<th></th>
+		</tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+		<tr>
+			<td>
+				@Html.DisplayFor(modelItem => item.UniName)
+			</td>
+
+			<td>
+				@Html.DisplayFor(modelItem => item.UniDesc)
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.UniLocation)
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.NumStudents)
+			</td>
+
+		</tr>
+}
+    </tbody>
+</table>

@@ -9,66 +9,83 @@ using COP4710_V2.Models;
 
 namespace COP4710_V2.Controllers
 {
-    public class AdminsController : Controller
+    public class UniversitiesController : Controller
     {
         private readonly UniversityEventContext _context;
 
-        public AdminsController(UniversityEventContext context)
+        public UniversitiesController(UniversityEventContext context)
         {
             _context = context;
         }
 
-        // GET: Admins
+        // GET: Universities
         public async Task<IActionResult> Index()
         {
-            var universityEventContext = _context.Admins.Include(a => a.Admin);
-            return View(await universityEventContext.ToListAsync());
+
+			var unis = await _context.University.ToListAsync();
+
+			// If user is a Super Admin return("IndexforSAdmins")
+			var currentUserEmail = User.Identity.Name;
+
+			// Queries AspNetUsersTable for ID of entry with current Users Email.
+			var CurrentUserID = (from C in _context.AspNetUsers
+								where C.UserName == currentUserEmail
+								select C.Id).First().ToString();
+			
+			// Queries SAdmin table for Current User ID
+			var isUserSAdmin = (from A in _context.Superadmins
+							   where A.SuperAdminId == CurrentUserID
+							   select A.SuperAdminId).Any();
+
+			if(isUserSAdmin)
+				return View("IndexForSAdmins", unis);
+
+			//If user is NOT return("IndexForUser");	
+			else
+				return View("IndexForUsers", unis);
         }
 
-        // GET: Admins/Details/5
+        // GET: Universities/Details/5
         public async Task<IActionResult> Details(string id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-            
-            var admins = await _context.Admins
-                .Include(a => a.Admin)
-                .FirstOrDefaultAsync(m => m.AdminId == id);
-            if (admins == null)
+
+            var university = await _context.University
+                .FirstOrDefaultAsync(m => m.UniName == id);
+            if (university == null)
             {
                 return NotFound();
             }
 
-            return View(admins);
+            return View(university);
         }
 
-        // GET: Admins/Create
+        // GET: Universities/Create
         public IActionResult Create()
         {
-            ViewData["AdminId"] = new SelectList(_context.AspNetUsers, "Id", "Id");
             return View();
         }
 
-        // POST: Admins/Create
+        // POST: Universities/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("AdminId")] Admins admins)
+        public async Task<IActionResult> Create([Bind("UniName,UniDesc,UniLocation,NumStudents")] University university)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(admins);
+                _context.Add(university);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AdminId"] = new SelectList(_context.AspNetUsers, "Id", "Id", admins.AdminId);
-            return View(admins);
+            return View(university);
         }
 
-        // GET: Admins/Edit/5
+        // GET: Universities/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
@@ -76,23 +93,22 @@ namespace COP4710_V2.Controllers
                 return NotFound();
             }
 
-            var admins = await _context.Admins.FindAsync(id);
-            if (admins == null)
+            var university = await _context.University.FindAsync(id);
+            if (university == null)
             {
                 return NotFound();
             }
-            ViewData["AdminId"] = new SelectList(_context.AspNetUsers, "Id", "Id", admins.AdminId);
-            return View(admins);
+            return View(university);
         }
 
-        // POST: Admins/Edit/5
+        // POST: Universities/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("AdminId")] Admins admins)
+        public async Task<IActionResult> Edit(string id, [Bind("UniName,UniDesc,UniLocation,NumStudents")] University university)
         {
-            if (id != admins.AdminId)
+            if (id != university.UniName)
             {
                 return NotFound();
             }
@@ -101,12 +117,12 @@ namespace COP4710_V2.Controllers
             {
                 try
                 {
-                    _context.Update(admins);
+                    _context.Update(university);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!AdminsExists(admins.AdminId))
+                    if (!UniversityExists(university.UniName))
                     {
                         return NotFound();
                     }
@@ -117,11 +133,10 @@ namespace COP4710_V2.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AdminId"] = new SelectList(_context.AspNetUsers, "Id", "Id", admins.AdminId);
-            return View(admins);
+            return View(university);
         }
 
-        // GET: Admins/Delete/5
+        // GET: Universities/Delete/5
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
@@ -129,43 +144,30 @@ namespace COP4710_V2.Controllers
                 return NotFound();
             }
 
-            var admins = await _context.Admins
-                .Include(a => a.Admin)
-                .FirstOrDefaultAsync(m => m.AdminId == id);
-            if (admins == null)
+            var university = await _context.University
+                .FirstOrDefaultAsync(m => m.UniName == id);
+            if (university == null)
             {
                 return NotFound();
             }
 
-            return View(admins);
+            return View(university);
         }
 
-        // POST: Admins/Delete/5
+        // POST: Universities/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var admins = await _context.Admins.FindAsync(id);
-            _context.Admins.Remove(admins);
+            var university = await _context.University.FindAsync(id);
+            _context.University.Remove(university);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool AdminsExists(string id)
+        private bool UniversityExists(string id)
         {
-            return _context.Admins.Any(e => e.AdminId == id);
-        }
-        
-        public async Task<IActionResult> TestDisplay(string id)
-        {
-            ViewBag.test = id;
-
-			var Admino = (from b in _context.Admins
-						 select b.AdminId).ToList();
-
-
-			ViewBag.whatever = Admino.First();
-            return View("PullTest");
+            return _context.University.Any(e => e.UniName == id);
         }
     }
 }

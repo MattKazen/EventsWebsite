@@ -1,0 +1,41 @@
+﻿@model COP4710_V2.Models.University
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2>Edit</h2>
+
+<h4>University</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="UniName" />
+            <div class="form-group">
+                <label asp-for="UniDesc" class="control-label"></label>
+                <input asp-for="UniDesc" class="form-control" />
+                <span asp-validation-for="UniDesc" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UniLocation" class="control-label"></label>
+                <input asp-for="UniLocation" class="form-control" />
+                <span asp-validation-for="UniLocation" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NumStudents" class="control-label"></label>
+                <input asp-for="NumStudents" class="form-control" />
+                <span asp-validation-for="NumStudents" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
