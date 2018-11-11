@@ -35,12 +35,13 @@ namespace COP4710_V2
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddDbContext<UniversityEventContext>(options =>
+            services.AddDbContext<Data.UniversityEventContext>(options =>
                 options.UseSqlServer(@"server=cop4017-2.database.windows.net;database=University Event;uid=dbadmin;pwd=Ucfdbs!!"));
-            services.AddDefaultIdentity<IdentityUser>()
-                .AddEntityFrameworkStores<UniversityEventContext>();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddDefaultIdentity<IdentityUser>()
+                .AddEntityFrameworkStores<Data.UniversityEventContext>();
+
+			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

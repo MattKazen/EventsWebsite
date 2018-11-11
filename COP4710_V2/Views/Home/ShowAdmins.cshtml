@@ -1,0 +1,22 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<h2>SHOW ADMINS</h2>
+
+<ul>
+	@{
+		<li> AdminID's in the Database </li>
+
+		foreach (var adminID in ViewBag.Admins)
+		{
+			<li>@adminID</li>
+		};
+
+		<p>Current User ID is<br /> @ViewBag.UserID!</p>
+
+
+	}
+
+</ul>
