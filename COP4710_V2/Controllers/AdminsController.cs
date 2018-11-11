@@ -32,7 +32,7 @@ namespace COP4710_V2.Controllers
             {
                 return NotFound();
             }
-
+            
             var admins = await _context.Admins
                 .Include(a => a.Admin)
                 .FirstOrDefaultAsync(m => m.AdminId == id);
@@ -154,6 +154,13 @@ namespace COP4710_V2.Controllers
         private bool AdminsExists(string id)
         {
             return _context.Admins.Any(e => e.AdminId == id);
+        }
+
+        [Route("Admins/TestDisplay")]
+        public IActionResult TestDisplay()
+        {
+            //ViewBag.test = "yolo";
+            return View();
         }
     }
 }

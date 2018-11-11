@@ -42,6 +42,7 @@ namespace COP4710_V2
                 .AddEntityFrameworkStores<Data.UniversityEventContext>();
 
 			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            //services.AddScoped<Admins>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
