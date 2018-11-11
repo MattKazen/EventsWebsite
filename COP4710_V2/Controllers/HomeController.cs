@@ -53,7 +53,7 @@ namespace COP4710_V2.Controllers
 		private void GetCurrentUserID()
 		{
 			String userEmail = User.Identity.Name;
-			String Query = "Select Id From AspNetUsers Where Email = 'admin1@gmail.com'";
+            String Query = "Select Id From AspNetUsers Where Email = '" + userEmail + "'";
 
 			DataTable table = GetDataFromQuery(Query);
 
