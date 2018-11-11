@@ -155,12 +155,12 @@ namespace COP4710_V2.Controllers
         {
             return _context.Admins.Any(e => e.AdminId == id);
         }
-
-        [Route("Admins/TestDisplay")]
-        public IActionResult TestDisplay()
+        
+        public async Task<IActionResult> TestDisplay(string id)
         {
-            //ViewBag.test = "yolo";
-            return View();
+            ViewBag.test = id;
+            ViewBag.whatever = _context.Admins.FirstOrDefault();
+            return View("PullTest");
         }
     }
 }
