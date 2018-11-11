@@ -18,6 +18,16 @@ namespace COP4710_V2.Controllers
             _context = context;
         }
 
+		//Given UserEmail returns Corresponding ID
+		private String getCurrentUserID(String Email)
+		{
+			// Queries AspNetUsersTable for ID of entry with current Users Email.
+			var CurrentUserID = (from C in _context.AspNetUsers
+								 where C.UserName == Email
+								 select C.Id).First().ToString();
+			return CurrentUserID;
+		}
+
         // GET: Universities
         public async Task<IActionResult> Index()
         {
@@ -27,17 +37,15 @@ namespace COP4710_V2.Controllers
 			// If user is a Super Admin return("IndexforSAdmins")
 			var currentUserEmail = User.Identity.Name;
 
-			// Queries AspNetUsersTable for ID of entry with current Users Email.
-			var CurrentUserID = (from C in _context.AspNetUsers
-								where C.UserName == currentUserEmail
-								select C.Id).First().ToString();
+			var currentUserID = getCurrentUserID(currentUserEmail);
 			
 			// Queries SAdmin table for Current User ID
 			var isUserSAdmin = (from A in _context.Superadmins
-							   where A.SuperAdminId == CurrentUserID
-							   select A.SuperAdminId).Any();
-
-			if(isUserSAdmin)
+							   where A.SuperAdminId == currentUserID
+							   select A.SuperAdminId);
+			
+			//If table is not empty
+			if(isUserSAdmin.Any())
 				return View("IndexForSAdmins", unis);
 
 			//If user is NOT return("IndexForUser");	
@@ -78,7 +86,17 @@ namespace COP4710_V2.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(university);
+				//Add University to Database
+				_context.Add(university);
+				
+				//Upate RelationshipTable
+				CreatesUni unicreated = new CreatesUni();
+
+				unicreated.SuperAdminId = getCurrentUserID(User.Identity.Name);
+				unicreated.UniName = university.UniName;
+
+				_context.Add(unicreated);
+
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
