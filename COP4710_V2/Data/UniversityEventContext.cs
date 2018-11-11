@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace COP4710_V2.Models
 {
-    public partial class UniversityEventContext : IdentityDbContext
+    public partial class UniversityEventContext : DbContext
     {
         public UniversityEventContext()
         {
