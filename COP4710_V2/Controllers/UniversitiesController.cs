@@ -82,16 +82,12 @@ namespace COP4710_V2.Controllers
         {
             if (ModelState.IsValid)
             {
+				//Adds User key to University Class
+				university.CreatorId = getIdFromEmail(User.Identity.Name);
+
 				//Add University to Database
 				_context.Add(university);
 				
-				//Upate RelationshipTable
-			CreatesUni unicreated = new CreatesUni();
-
-				unicreated.SuperAdminId = getIdFromEmail(User.Identity.Name);
-				unicreated.UniName = university.UniName;
-
-				_context.Add(unicreated);
 
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

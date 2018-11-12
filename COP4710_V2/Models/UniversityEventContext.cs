@@ -26,7 +26,6 @@ namespace COP4710_V2.Models
         public virtual DbSet<Comments> Comments { get; set; }
         public virtual DbSet<CreatesPrivEvents> CreatesPrivEvents { get; set; }
         public virtual DbSet<CreatesPubEvents> CreatesPubEvents { get; set; }
-        public virtual DbSet<CreatesUni> CreatesUni { get; set; }
         public virtual DbSet<EventLocation> EventLocation { get; set; }
         public virtual DbSet<Events> Events { get; set; }
         public virtual DbSet<PrivEvents> PrivEvents { get; set; }
@@ -42,7 +41,7 @@ namespace COP4710_V2.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server = COP4017-2.Database.windows.net;Database=University Event;uid=dbadmin;pwd=Ucfdbs!!;");
+                optionsBuilder.UseSqlServer("server=cop4017-2.database.windows.net;database=University Event;uid=dbadmin;pwd=Ucfdbs!!");
             }
         }
 
@@ -261,30 +260,6 @@ namespace COP4710_V2.Models
                     .HasConstraintName("FK__creates_p__Super__3B40CD36");
             });
 
-            modelBuilder.Entity<CreatesUni>(entity =>
-            {
-                entity.HasKey(e => e.UniName);
-
-                entity.ToTable("creates_uni");
-
-                entity.Property(e => e.UniName)
-                    .HasMaxLength(50)
-                    .ValueGeneratedNever();
-
-                entity.Property(e => e.SuperAdminId).HasMaxLength(450);
-
-                entity.HasOne(d => d.SuperAdmin)
-                    .WithMany(p => p.CreatesUni)
-                    .HasForeignKey(d => d.SuperAdminId)
-                    .HasConstraintName("FK__creates_u__Super__2AD55B43");
-
-                entity.HasOne(d => d.UniNameNavigation)
-                    .WithOne(p => p.CreatesUni)
-                    .HasForeignKey<CreatesUni>(d => d.UniName)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__creates_u__UniNa__2BC97F7C");
-            });
-
             modelBuilder.Entity<EventLocation>(entity =>
             {
                 entity.HasKey(e => e.LocationId);
@@ -475,11 +450,23 @@ namespace COP4710_V2.Models
                     .HasMaxLength(50)
                     .ValueGeneratedNever();
 
+                entity.Property(e => e.CreatorId)
+                    .HasColumnName("CreatorID")
+                    .HasMaxLength(450);
+
                 entity.Property(e => e.NumStudents).HasColumnName("num_students");
 
                 entity.Property(e => e.UniDesc).HasMaxLength(50);
 
+                entity.Property(e => e.UniEmail).HasMaxLength(50);
+
                 entity.Property(e => e.UniLocation).HasMaxLength(50);
+
+                entity.HasOne(d => d.Creator)
+                    .WithMany(p => p.University)
+                    .HasForeignKey(d => d.CreatorId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_create_uni_creatorID");
             });
         }
     }
