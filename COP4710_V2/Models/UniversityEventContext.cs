@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -43,7 +42,7 @@ namespace COP4710_V2.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("server=cop4017-2.database.windows.net;database=University Event;uid=dbadmin;pwd=Ucfdbs!!");
+                optionsBuilder.UseSqlServer("Server = COP4017-2.Database.windows.net;Database=University Event;uid=dbadmin;pwd=Ucfdbs!!;");
             }
         }
 
@@ -233,12 +232,12 @@ namespace COP4710_V2.Models
 
             modelBuilder.Entity<CreatesPubEvents>(entity =>
             {
-                entity.HasKey(e => e.EventId);
+                entity.HasKey(e => e.PublicEventId);
 
                 entity.ToTable("creates_pub_events");
 
-                entity.Property(e => e.EventId)
-                    .HasColumnName("EventID")
+                entity.Property(e => e.PublicEventId)
+                    .HasColumnName("Public_Event_ID")
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.AdminId).HasMaxLength(450);
@@ -248,41 +247,42 @@ namespace COP4710_V2.Models
                 entity.HasOne(d => d.Admin)
                     .WithMany(p => p.CreatesPubEvents)
                     .HasForeignKey(d => d.AdminId)
-                    .HasConstraintName("FK__creates_p__Admin__0E6E26BF");
+                    .HasConstraintName("FK__creates_p__Admin__3C34F16F");
 
-                entity.HasOne(d => d.Event)
+                entity.HasOne(d => d.PublicEvent)
                     .WithOne(p => p.CreatesPubEvents)
-                    .HasForeignKey<CreatesPubEvents>(d => d.EventId)
+                    .HasForeignKey<CreatesPubEvents>(d => d.PublicEventId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__creates_p__Event__0C85DE4D");
+                    .HasConstraintName("FK__creates_p__Publi__3A4CA8FD");
 
                 entity.HasOne(d => d.SuperAdmin)
                     .WithMany(p => p.CreatesPubEvents)
                     .HasForeignKey(d => d.SuperAdminId)
-                    .HasConstraintName("FK__creates_p__Super__0D7A0286");
+                    .HasConstraintName("FK__creates_p__Super__3B40CD36");
             });
 
             modelBuilder.Entity<CreatesUni>(entity =>
             {
-                entity.HasKey(e => new { e.SuperAdminId, e.UniName });
+                entity.HasKey(e => e.UniName);
 
                 entity.ToTable("creates_uni");
 
-                entity.Property(e => e.SuperAdminId).HasColumnName("SuperAdminID");
+                entity.Property(e => e.UniName)
+                    .HasMaxLength(50)
+                    .ValueGeneratedNever();
 
-                entity.Property(e => e.UniName).HasMaxLength(50);
+                entity.Property(e => e.SuperAdminId).HasMaxLength(450);
 
                 entity.HasOne(d => d.SuperAdmin)
                     .WithMany(p => p.CreatesUni)
                     .HasForeignKey(d => d.SuperAdminId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__creates_u__Super__6D0D32F4");
+                    .HasConstraintName("FK__creates_u__Super__2AD55B43");
 
                 entity.HasOne(d => d.UniNameNavigation)
-                    .WithMany(p => p.CreatesUni)
-                    .HasForeignKey(d => d.UniName)
+                    .WithOne(p => p.CreatesUni)
+                    .HasForeignKey<CreatesUni>(d => d.UniName)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__creates_u__UniNa__6E01572D");
+                    .HasConstraintName("FK__creates_u__UniNa__2BC97F7C");
             });
 
             modelBuilder.Entity<EventLocation>(entity =>
@@ -365,19 +365,19 @@ namespace COP4710_V2.Models
 
             modelBuilder.Entity<PubEvents>(entity =>
             {
-                entity.HasKey(e => e.EventId);
+                entity.HasKey(e => e.PublicEventId);
 
                 entity.ToTable("pub_events");
 
-                entity.Property(e => e.EventId)
-                    .HasColumnName("EventID")
+                entity.Property(e => e.PublicEventId)
+                    .HasColumnName("Public_Event_ID")
                     .ValueGeneratedNever();
 
-                entity.HasOne(d => d.Event)
+                entity.HasOne(d => d.PublicEvent)
                     .WithOne(p => p.PubEvents)
-                    .HasForeignKey<PubEvents>(d => d.EventId)
+                    .HasForeignKey<PubEvents>(d => d.PublicEventId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__pub_event__Event__09A971A2");
+                    .HasConstraintName("FK__pub_event__Publi__32AB8735");
             });
 
             modelBuilder.Entity<Rso>(entity =>
@@ -391,12 +391,12 @@ namespace COP4710_V2.Models
 
             modelBuilder.Entity<RsoCreatesEvents>(entity =>
             {
-                entity.HasKey(e => e.EventId);
+                entity.HasKey(e => e.RsoEventId);
 
                 entity.ToTable("rso_creates_events");
 
-                entity.Property(e => e.EventId)
-                    .HasColumnName("EventID")
+                entity.Property(e => e.RsoEventId)
+                    .HasColumnName("RSO_Event_ID")
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.AdminId)
@@ -410,44 +410,44 @@ namespace COP4710_V2.Models
                     .WithMany(p => p.RsoCreatesEvents)
                     .HasForeignKey(d => d.AdminId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__rso_creat__admin__05D8E0BE");
+                    .HasConstraintName("FK__rso_creat__admin__43D61337");
 
-                entity.HasOne(d => d.Event)
+                entity.HasOne(d => d.RsoEvent)
                     .WithOne(p => p.RsoCreatesEvents)
-                    .HasForeignKey<RsoCreatesEvents>(d => d.EventId)
+                    .HasForeignKey<RsoCreatesEvents>(d => d.RsoEventId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__rso_creat__Event__04E4BC85");
+                    .HasConstraintName("FK__rso_creat__RSO_E__42E1EEFE");
 
                 entity.HasOne(d => d.Rso)
                     .WithMany(p => p.RsoCreatesEvents)
                     .HasForeignKey(d => d.Rsoid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__rso_creat__rsoid__06CD04F7");
+                    .HasConstraintName("FK__rso_creat__rsoid__44CA3770");
             });
 
             modelBuilder.Entity<RsoEvents>(entity =>
             {
-                entity.HasKey(e => e.EventId);
+                entity.HasKey(e => e.RsoEventId);
 
                 entity.ToTable("rso_events");
 
-                entity.Property(e => e.EventId)
-                    .HasColumnName("EventID")
+                entity.Property(e => e.RsoEventId)
+                    .HasColumnName("RSO_Event_ID")
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.RsoId).HasColumnName("RSO_ID");
 
-                entity.HasOne(d => d.Event)
+                entity.HasOne(d => d.RsoEvent)
                     .WithOne(p => p.RsoEvents)
-                    .HasForeignKey<RsoEvents>(d => d.EventId)
+                    .HasForeignKey<RsoEvents>(d => d.RsoEventId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__rso_event__Event__01142BA1");
+                    .HasConstraintName("FK__rso_event__RSO_E__3F115E1A");
 
                 entity.HasOne(d => d.Rso)
                     .WithMany(p => p.RsoEvents)
                     .HasForeignKey(d => d.RsoId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__rso_event__RSO_I__02084FDA");
+                    .HasConstraintName("FK__rso_event__RSO_I__40058253");
             });
 
             modelBuilder.Entity<Superadmins>(entity =>

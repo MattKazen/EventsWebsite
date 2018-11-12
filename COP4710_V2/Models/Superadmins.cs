@@ -9,6 +9,7 @@ namespace COP4710_V2.Models
         {
             CreatesPrivEvents = new HashSet<CreatesPrivEvents>();
             CreatesPubEvents = new HashSet<CreatesPubEvents>();
+            CreatesUni = new HashSet<CreatesUni>();
         }
 
         public string SuperAdminId { get; set; }
@@ -16,5 +17,6 @@ namespace COP4710_V2.Models
         public AspNetUsers SuperAdmin { get; set; }
         public ICollection<CreatesPrivEvents> CreatesPrivEvents { get; set; }
         public ICollection<CreatesPubEvents> CreatesPubEvents { get; set; }
+        public ICollection<CreatesUni> CreatesUni { get; set; }
     }
 }

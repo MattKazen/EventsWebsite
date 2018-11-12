@@ -8,7 +8,7 @@ namespace COP4710_V2.Models
         public string UniName { get; set; }
         public string SuperAdminId { get; set; }
 
-        public AspNetUsers SuperAdmin { get; set; }
+        public Superadmins SuperAdmin { get; set; }
         public University UniNameNavigation { get; set; }
     }
 }

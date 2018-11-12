@@ -19,17 +19,13 @@ namespace COP4710_V2.Controllers
         }
 
 		//Given UserEmail returns Corresponding ID
-		private String getCurrentUserID(String Email)
+		private String getIdFromEmail(String email)
 		{
-			// Queries AspNetUsersTable for ID of entry with current Users Email.
-			var CurrentUserID = (from C in _context.AspNetUsers
-								 where C.UserName == Email
-								 select C.Id).First().ToString();
-			return CurrentUserID;
+			AspNetUsers currentUser = _context.AspNetUsers.FromSql("emailtoID '" + email + "'").FirstOrDefault();
+			return currentUser.Id;
 		}
-
-        // GET: Universities
-        public async Task<IActionResult> Index()
+		// GET: Universities
+		public async Task<IActionResult> Index()
         {
 
 			var unis = await _context.University.ToListAsync();
@@ -37,7 +33,7 @@ namespace COP4710_V2.Controllers
 			// If user is a Super Admin return("IndexforSAdmins")
 			var currentUserEmail = User.Identity.Name;
 
-			var currentUserID = getCurrentUserID(currentUserEmail);
+			var currentUserID = getIdFromEmail(currentUserEmail);
 			
 			// Queries SAdmin table for Current User ID
 			var isUserSAdmin = (from A in _context.Superadmins
@@ -90,9 +86,9 @@ namespace COP4710_V2.Controllers
 				_context.Add(university);
 				
 				//Upate RelationshipTable
-				CreatesUni unicreated = new CreatesUni();
+			CreatesUni unicreated = new CreatesUni();
 
-				unicreated.SuperAdminId = getCurrentUserID(User.Identity.Name);
+				unicreated.SuperAdminId = getIdFromEmail(User.Identity.Name);
 				unicreated.UniName = university.UniName;
 
 				_context.Add(unicreated);

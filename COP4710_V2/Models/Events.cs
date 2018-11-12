@@ -21,10 +21,8 @@ namespace COP4710_V2.Models
         public string Email { get; set; }
 
         public EventLocation Location { get; set; }
-        public CreatesPubEvents CreatesPubEvents { get; set; }
         public PrivEvents PrivEvents { get; set; }
         public PubEvents PubEvents { get; set; }
-        public RsoCreatesEvents RsoCreatesEvents { get; set; }
         public RsoEvents RsoEvents { get; set; }
         public ICollection<Comments> Comments { get; set; }
     }
