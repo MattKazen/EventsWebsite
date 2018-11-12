@@ -90,6 +90,8 @@ namespace COP4710_V2.Controllers
 
 		public IActionResult Index()
         {
+            if (User.Identity.IsAuthenticated)
+                return RedirectToAction("Index", "Universities", "");
             return View();
         }
 
