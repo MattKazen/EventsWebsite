@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using COP4710_V2.Models;
+using System.Data;
 
 namespace COP4710_V2.Controllers
 {
@@ -160,13 +161,13 @@ namespace COP4710_V2.Controllers
         {
             ViewBag.test = id;
 
-            //var Admino = (from b in _context.Admins
-            //select b.AdminId).ToList();
+			String AdminID = "'53fd3d45-5baa-4f3d-a0bc-4390f08a4d5d'";
 
+			var result2 = _context.University.FromSql("findSelfCreatedUniversities " + AdminID)
+				.ToList<University>();
 
-            //ViewBag.whatever = Admino.First();
+			ViewBag.whateverr = result2;
 
-            ViewBag.whatever = _context.Database.ExecuteSqlCommand("findSelfCreatedUniversities @id = " + "'53fd3d45-5baa-4f3d-a0bc-4390f08a4d5d'");
             return View("PullTest");
         }
     }

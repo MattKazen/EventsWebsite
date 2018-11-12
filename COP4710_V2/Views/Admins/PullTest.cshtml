@@ -1,8 +1,20 @@
 ﻿
 @{
-    ViewData["Title"] = "TestDisplay";
+	ViewData["Title"] = "TestDisplay";
 }
 
 <h2>@ViewBag.test</h2>
-<h3>@ViewBag.whatever.</h3>
 
+<ul>
+	@{
+		<li>Universities for ADMIN2 </li>
+
+		foreach (var Uni in ViewBag.whateverr)
+		{
+			<li>@Uni.UniName  @Uni.UniDesc   @Uni.UniLocation  @Uni.NumStudents   </li>
+		};
+		
+
+	}
+
+</ul>
