@@ -28,6 +28,7 @@ namespace COP4710_V2.Models
         public virtual DbSet<CreatesPubEvents> CreatesPubEvents { get; set; }
         public virtual DbSet<EventLocation> EventLocation { get; set; }
         public virtual DbSet<Events> Events { get; set; }
+        public virtual DbSet<PendingEvents> PendingEvents { get; set; }
         public virtual DbSet<PrivEvents> PrivEvents { get; set; }
         public virtual DbSet<PubEvents> PubEvents { get; set; }
         public virtual DbSet<Rso> Rso { get; set; }
@@ -266,13 +267,13 @@ namespace COP4710_V2.Models
 
                 entity.Property(e => e.LocationId).HasColumnName("LocationID");
 
-                entity.Property(e => e.Addres)
-                    .HasColumnName("addres")
-                    .HasMaxLength(50);
+                entity.Property(e => e.Address).HasMaxLength(50);
 
                 entity.Property(e => e.Lat)
                     .HasColumnName("lat")
                     .HasMaxLength(20);
+
+                entity.Property(e => e.LocationName).HasMaxLength(50);
 
                 entity.Property(e => e.Long)
                     .HasColumnName("long")
@@ -303,6 +304,33 @@ namespace COP4710_V2.Models
                     .WithMany(p => p.Events)
                     .HasForeignKey(d => d.LocationId)
                     .HasConstraintName("FK__events___Locatio__75A278F5");
+            });
+
+            modelBuilder.Entity<PendingEvents>(entity =>
+            {
+                entity.HasKey(e => e.PendingEventId);
+
+                entity.Property(e => e.PendingEventId)
+                    .HasColumnName("PendingEventID")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.ApproverId)
+                    .HasColumnName("ApproverID")
+                    .HasMaxLength(450);
+
+                entity.Property(e => e.CreatorId)
+                    .HasColumnName("CreatorID")
+                    .HasMaxLength(450);
+
+                entity.HasOne(d => d.Approver)
+                    .WithMany(p => p.PendingEvents)
+                    .HasForeignKey(d => d.ApproverId)
+                    .HasConstraintName("FK__PendingEv__Appro__5E54FF49");
+
+                entity.HasOne(d => d.Creator)
+                    .WithMany(p => p.PendingEvents)
+                    .HasForeignKey(d => d.CreatorId)
+                    .HasConstraintName("FK__PendingEv__Creat__5D60DB10");
             });
 
             modelBuilder.Entity<PrivEvents>(entity =>

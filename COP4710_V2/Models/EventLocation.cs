@@ -11,7 +11,8 @@ namespace COP4710_V2.Models
         }
 
         public int LocationId { get; set; }
-        public string Addres { get; set; }
+        public string LocationName { get; set; }
+        public string Address { get; set; }
         public string Long { get; set; }
         public string Lat { get; set; }
 

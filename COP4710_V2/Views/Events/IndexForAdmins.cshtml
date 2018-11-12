@@ -46,7 +46,7 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.EventName)
+                @Html.DisplayFor(modelItem => item.EventName) 
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.StartTime)
@@ -78,6 +78,9 @@
                 <a asp-action="Delete" asp-route-id="@item.EventId">Delete</a>
             </td>
         </tr>
+		<tf>
+			<li><a asp-area="" asp-controller="Comments" asp-action="Index">View Comments</a></li>
+		</tf>
 }
     </tbody>
 </table>

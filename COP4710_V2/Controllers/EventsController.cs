@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using COP4710_V2.Models;
+using System.Diagnostics;
 
 namespace COP4710_V2.Controllers
 {
@@ -19,10 +20,20 @@ namespace COP4710_V2.Controllers
         }
 
         // GET: Events
+		// Grabs all the events from the Database and directs user to Index 
+		// View depending on admin or not (create option)
         public async Task<IActionResult> Index()
         {
-            var universityEventContext = _context.Events.Include(e => e.Location);
-            return View(await universityEventContext.ToListAsync());
+			//Grabs all events in Events Table
+			var eventContext = _context.Events.Include(e => e.Location);
+
+			//If the user is an admin, direct them to view with Create Button
+			if (isUserAdmin())
+				return View("IndexForAdmins", await eventContext.ToListAsync());
+
+			//If user is not admin, direct them to view without create button;	
+			else
+				return View("IndexForUsers", await eventContext.ToListAsync());
         }
 
         // GET: Events/Details/5
@@ -47,23 +58,55 @@ namespace COP4710_V2.Controllers
         // GET: Events/Create
         public IActionResult Create()
         {
-            ViewData["LocationId"] = new SelectList(_context.EventLocation, "LocationId", "LocationId");
-            return View();
+			//Grabs list of Possible Locations to put the Event at
+			ViewData["LocationId"] = new SelectList(_context.EventLocation, "LocationId", "LocationId");
+
+			return View();
         }
 
         // POST: Events/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("EventId,LocationId,EventName,StartTime,StartDay,StartMonth,EventDesc,Category,ContactPhone,ContactEmail")] Events events)
+        public async Task<IActionResult> Create([Bind("EventId,LocationId,EventName,StartTime,StartDay," +"StartMonth,EventDesc,Category,ContactPhone,ContactEmail")]Events events)
         {
-            if (ModelState.IsValid)
+			//Determines Type of Event
+			String EventType = Request.Form["EventType"];
+			Debug.WriteLine("TYPE OF EVENT" + EventType);
+			//////////////// ////////////////////////////
+			EventType = "Public";
+
+			if (ModelState.IsValid)
             {
-                _context.Add(events);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
+				//If Public Event --> Insert PendingEvent into Pending Events Table
+				//Approver remains null until SuperAdmin Approves
+				PendingEvents newEvent = new PendingEvents();
+				newEvent.PendingEventId = events.EventId;
+				newEvent.CreatorId = getUserID();
+
+				if (EventType == "Public")
+				{
+					_context.Add(newEvent);
+				}
+
+				else if (EventType == "Private")
+				{
+					_context.Add(newEvent);
+				}
+				//RSO Event --> Automatically created
+				//Need to check for User's RSO affiliation and add to RsoEventsTable
+				else if(EventType == "RSO")
+				{
+					RsoEvents EventRSO = new RsoEvents();
+					EventRSO.RsoEventId = events.EventId;
+
+					_context.Add(EventRSO);
+				}
+
+				await _context.SaveChangesAsync();
+
+				return View("IndexForAdmins",  _context.Events);
+
+			}
             ViewData["LocationId"] = new SelectList(_context.EventLocation, "LocationId", "LocationId", events.LocationId);
             return View(events);
         }
@@ -86,8 +129,6 @@ namespace COP4710_V2.Controllers
         }
 
         // POST: Events/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("EventId,LocationId,EventName,StartTime,StartDay,StartMonth,EventDesc,Category,ContactPhone,ContactEmail")] Events events)
@@ -181,6 +222,29 @@ namespace COP4710_V2.Controllers
 			ViewBag.Months(MonthsRange);
 			ViewBag.Days(DaysRange);
 			ViewBag.StartTimes(TimeRange);
+		}
+
+		private String getUserID()
+		{
+
+			String email = User.Identity.Name;
+
+			return _context.AspNetUsers.FromSql("emailtoID '" + email + "'").FirstOrDefault().Id;
+		}
+
+		private Boolean isUserAdmin()
+		{
+			String userId = getUserID();
+
+			return _context.Admins.FromSql("isUserAdmin '" + userId + "'").ToList().Any();
+		}
+
+
+		private Boolean isUserSuper()
+		{
+			String userId = getUserID();
+
+			return _context.Superadmins.FromSql("isUserSuper '" + userId + "'").ToList().Any();
 		}
 
 	}
