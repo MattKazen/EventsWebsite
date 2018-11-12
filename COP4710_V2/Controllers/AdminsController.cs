@@ -167,8 +167,9 @@ namespace COP4710_V2.Controllers
 		
 			var IDD =  _context.AspNetUsers.FromSql("emailtoID " + UserEmail).FirstOrDefault();
 
+			String userId = IDD.Id;
 
-			var Unilist = _context.University.FromSql("findSelfCreatedUniversities '" + IDD +"'")
+			var Unilist = _context.University.FromSql("findSelfCreatedUniversities '" + userId +"'")
 				.ToList<University>();
 
 			ViewBag.Unis = Unilist;
