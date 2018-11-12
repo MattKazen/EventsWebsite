@@ -161,21 +161,27 @@ namespace COP4710_V2.Controllers
         {
             ViewBag.test = id;
 
+			//Current User Email Address
+			String UserEmail = User.Identity.Name;
 
-
-			String UserEmail = "'" + User.Identity.Name + "'";
-		
-			var IDD =  _context.AspNetUsers.FromSql("emailtoID " + UserEmail).FirstOrDefault();
-
+			//Returns AspUserModel for Current user
+			var IDD = GetIdFromEmail(UserEmail);
+			
+			//Saves Current Users Id
 			String userId = IDD.Id;
 
-			var Unilist = _context.University.FromSql("findSelfCreatedUniversities '" + userId +"'")
-				.ToList<University>();
+			//Returns List of University Models created by the user
+			var Unilist = GetUniversitiesCreated(userId);
+
+			//Returns Boolean if user is Admin
+			var isAdmin = IsUserAdmin(userId);
+
+			//Returns Boolean for if user is SuperAdmin
+			var isSuper = isUserSuper(userId);
+
 
 			ViewBag.Unis = Unilist;
 			ViewBag.ID = IDD;
-
-			var isAdmin = _context.Admins.FromSql("isUserAdmin '" + userId + "'").ToList().Any() ;
 
 			if (isAdmin)
 				ViewBag.IsAdmin = " YESS ";
@@ -183,7 +189,36 @@ namespace COP4710_V2.Controllers
 				ViewBag.IsAdmin = " NOO";
 
 
-            return View("PullTest");
+			if (isSuper)
+				ViewBag.IsSuper = " YESS ";
+			else
+				ViewBag.IsSuper = " NOO";
+
+
+			return View("PullTest");
         }
-    }
+
+		private AspNetUsers GetIdFromEmail(String email)
+		{
+			return _context.AspNetUsers.FromSql("emailtoID '" + email + "'" ).FirstOrDefault();
+		}
+
+		private List<University> GetUniversitiesCreated(String userId)
+		{
+			return _context.University
+						   .FromSql("findSelfCreatedUniversities '" + userId + "'")
+						   .ToList<University>();
+		}
+
+		private Boolean IsUserAdmin(String userId)
+		{
+			return _context.Admins.FromSql("isUserAdmin '" + userId + "'").ToList().Any();
+		}
+
+
+		private Boolean isUserSuper(String userId)
+		{
+			return _context.Superadmins.FromSql("isUserSuper '" + userId + "'").ToList().Any();
+		}
+	}
 }

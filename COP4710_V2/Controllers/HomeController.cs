@@ -78,7 +78,7 @@ namespace COP4710_V2.Controllers
 			//If the Current UserID is not in the list of admins then return to previous view
 			if (!AdminList.Contains(ViewBag.UserID))
 			{
-				var skeet = "skeet";
+				
 				return View();
 			}
 			//Something for when user is not signed in
