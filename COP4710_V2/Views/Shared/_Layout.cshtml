@@ -29,17 +29,23 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				<a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">COP4710_V2</a>
+				<a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">University Events</a>
 			</div>
 			<div class="navbar-collapse collapse">
-				<ul class="nav navbar-nav">
-					<li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-					<li><a asp-area="" asp-controller="Admins" asp-action="TestDisplay" asp-route-id="@User.Identity.Name">AdminsPullTest</a></li>
-					<li><a asp-area="" asp-controller="Comments" asp-action="Index">Comments</a></li>
-					<li><a asp-area="" asp-controller="Universities" asp-action="Index">View Universities</a></li>
-					<li><a asp-area="" asp-controller="Home" asp-action="ShowAdmins">Show Admins</a></li>
+                <ul class="nav navbar-nav">
+                    @{
+                        if (User.Identity.IsAuthenticated)
+                            {
+                                <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                                <li><a asp-area="" asp-controller="Admins" asp-action="TestDisplay" asp-route-id="@User.Identity.Name">AdminsPullTest</a></li>
+                                <li><a asp-area="" asp-controller="Comments" asp-action="Index">Comments</a></li>
+                                <li><a asp-area="" asp-controller="Universities" asp-action="Index">View Universities</a></li>
+                                <li><a asp-area="" asp-controller="Home" asp-action="ShowAdmins">Show Admins</a></li>
+                            }
+                        }
 
-				</ul>
+
+                </ul>
 				<partial name="_LoginPartial" />
 			</div>
 		</div>
