@@ -3,13 +3,15 @@
 	ViewData["Title"] = "TestDisplay";
 }
 
-<h2>@ViewBag.test</h2>
+<h2> CURRENT USER EMAIL @User.Identity.Name</h2>
+
+<h3>CURRENT USER ID IS @ViewBag.Id.Id</h3>
 
 <ul>
 	@{
-		<li>Universities for ADMIN2 </li>
+		<li>Universities for @User.Identity.Name </li>
 
-		foreach (var Uni in ViewBag.whateverr)
+		foreach (var Uni in ViewBag.Unis)
 		{
 			<li>@Uni.UniName  @Uni.UniDesc   @Uni.UniLocation  @Uni.NumStudents   </li>
 		};

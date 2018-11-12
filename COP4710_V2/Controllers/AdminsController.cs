@@ -161,12 +161,18 @@ namespace COP4710_V2.Controllers
         {
             ViewBag.test = id;
 
-			String AdminID = "'53fd3d45-5baa-4f3d-a0bc-4390f08a4d5d'";
 
-			var result2 = _context.University.FromSql("findSelfCreatedUniversities " + AdminID)
+
+			String UserEmail = "'" + User.Identity.Name + "'";
+		
+			var IDD =  _context.AspNetUsers.FromSql("emailtoID " + UserEmail).FirstOrDefault();
+
+
+			var Unilist = _context.University.FromSql("findSelfCreatedUniversities '" + IDD +"'")
 				.ToList<University>();
 
-			ViewBag.whateverr = result2;
+			ViewBag.Unis = Unilist;
+			ViewBag.ID = IDD;
 
             return View("PullTest");
         }
