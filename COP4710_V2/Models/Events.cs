@@ -12,13 +12,14 @@ namespace COP4710_V2.Models
 
         public int EventId { get; set; }
         public int? LocationId { get; set; }
-        public string Name { get; set; }
-        public TimeSpan? Time { get; set; }
-        public DateTime? Date { get; set; }
-        public string Desc { get; set; }
+        public string EventName { get; set; }
+        public int? StartTime { get; set; }
+        public int? StartDay { get; set; }
+        public int? StartMonth { get; set; }
+        public string EventDesc { get; set; }
         public string Category { get; set; }
-        public string Phone { get; set; }
-        public string Email { get; set; }
+        public string ContactPhone { get; set; }
+        public string ContactEmail { get; set; }
 
         public EventLocation Location { get; set; }
         public PrivEvents PrivEvents { get; set; }

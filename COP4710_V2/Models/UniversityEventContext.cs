@@ -287,33 +287,17 @@ namespace COP4710_V2.Models
 
                 entity.Property(e => e.EventId).HasColumnName("EventID");
 
-                entity.Property(e => e.Category)
-                    .HasColumnName("category")
-                    .HasMaxLength(50);
+                entity.Property(e => e.Category).HasMaxLength(50);
 
-                entity.Property(e => e.Date)
-                    .HasColumnName("date_")
-                    .HasColumnType("date");
+                entity.Property(e => e.ContactEmail).HasMaxLength(20);
 
-                entity.Property(e => e.Desc)
-                    .HasColumnName("desc_")
-                    .HasMaxLength(450);
+                entity.Property(e => e.ContactPhone).HasMaxLength(20);
 
-                entity.Property(e => e.Email)
-                    .HasColumnName("email")
-                    .HasMaxLength(20);
+                entity.Property(e => e.EventDesc).HasMaxLength(450);
+
+                entity.Property(e => e.EventName).HasMaxLength(20);
 
                 entity.Property(e => e.LocationId).HasColumnName("LocationID");
-
-                entity.Property(e => e.Name)
-                    .HasColumnName("name_")
-                    .HasMaxLength(20);
-
-                entity.Property(e => e.Phone)
-                    .HasColumnName("phone")
-                    .HasMaxLength(20);
-
-                entity.Property(e => e.Time).HasColumnName("time_");
 
                 entity.HasOne(d => d.Location)
                     .WithMany(p => p.Events)
