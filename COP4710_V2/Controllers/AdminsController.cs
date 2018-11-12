@@ -175,6 +175,14 @@ namespace COP4710_V2.Controllers
 			ViewBag.Unis = Unilist;
 			ViewBag.ID = IDD;
 
+			var isAdmin = _context.Admins.FromSql("isUserAdmin '" + userId + "'").ToList().Any() ;
+
+			if (isAdmin)
+				ViewBag.IsAdmin = " YESS ";
+			else
+				ViewBag.IsAdmin = " NOO";
+
+
             return View("PullTest");
         }
     }
