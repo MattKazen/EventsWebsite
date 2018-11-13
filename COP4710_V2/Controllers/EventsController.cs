@@ -27,9 +27,19 @@ namespace COP4710_V2.Controllers
 			//Grabs all events in Events Table
 			var eventContext = _context.Events.Include(e => e.Location);
 
+			//Selects all nonPendingEvents
+			var nonPendingEventContext = from b in eventContext
+										 where (bool) !b.IsPending
+										 select b;
+
 			//If the user is an admin, direct them to view with Create Button
 			if (isUserAdmin())
-				return View("IndexForAdmins", await eventContext.ToListAsync());
+				return View("IndexForAdmins", await nonPendingEventContext.ToListAsync());
+			//If the user is a super admin, grab 
+//	if (isUserSuper())
+//	{
+//		continue;
+//	}
 
 			//If user is not admin, direct them to view without create button;	
 			else
@@ -77,6 +87,11 @@ namespace COP4710_V2.Controllers
 
 			if (ModelState.IsValid)
             {
+
+				events.IsPending = true;
+				//Add Created Event to Events Table
+				_context.Add(events);
+
 				//If Public Event --> Insert PendingEvent into Pending Events Table
 				//Approver remains null until SuperAdmin Approves
 				PendingEvents newEvent = new PendingEvents();
@@ -101,14 +116,24 @@ namespace COP4710_V2.Controllers
 
 					_context.Add(EventRSO);
 				}
+				
+				//Save the Event into event table
+				_context.Add(events);
 
 				await _context.SaveChangesAsync();
 
-				return View("IndexForAdmins",  _context.Events);
+				//Selects all nonPendingEvents
+				var nonPendingEventContext = from b in _context.Events
+											 where (bool)!b.IsPending
+											 select b;
+
+				return View("IndexForAdmins",  nonPendingEventContext);
 
 			}
-            ViewData["LocationId"] = new SelectList(_context.EventLocation, "LocationId", "LocationId", events.LocationId);
-            return View(events);
+
+			ViewData["LocationId"] = new SelectList(_context.EventLocation, "LocationId", "LocationId", events.LocationId);
+
+			return RedirectToAction("Index", "Events", new { area = "" });
         }
 
         // GET: Events/Edit/5

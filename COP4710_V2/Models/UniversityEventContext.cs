@@ -325,12 +325,18 @@ namespace COP4710_V2.Models
                 entity.HasOne(d => d.Approver)
                     .WithMany(p => p.PendingEvents)
                     .HasForeignKey(d => d.ApproverId)
-                    .HasConstraintName("FK__PendingEv__Appro__5E54FF49");
+                    .HasConstraintName("FK__PendingEv__Appro__6501FCD8");
 
                 entity.HasOne(d => d.Creator)
                     .WithMany(p => p.PendingEvents)
                     .HasForeignKey(d => d.CreatorId)
-                    .HasConstraintName("FK__PendingEv__Creat__5D60DB10");
+                    .HasConstraintName("FK__PendingEv__Creat__640DD89F");
+
+                entity.HasOne(d => d.PendingEvent)
+                    .WithOne(p => p.PendingEvents)
+                    .HasForeignKey<PendingEvents>(d => d.PendingEventId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__PendingEv__Pendi__6319B466");
             });
 
             modelBuilder.Entity<PrivEvents>(entity =>

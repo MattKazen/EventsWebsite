@@ -20,8 +20,10 @@ namespace COP4710_V2.Models
         public string Category { get; set; }
         public string ContactPhone { get; set; }
         public string ContactEmail { get; set; }
+        public bool? IsPending { get; set; }
 
         public EventLocation Location { get; set; }
+        public PendingEvents PendingEvents { get; set; }
         public PrivEvents PrivEvents { get; set; }
         public PubEvents PubEvents { get; set; }
         public RsoEvents RsoEvents { get; set; }

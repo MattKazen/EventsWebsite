@@ -11,5 +11,6 @@ namespace COP4710_V2.Models
 
         public Superadmins Approver { get; set; }
         public Admins Creator { get; set; }
+        public Events PendingEvent { get; set; }
     }
 }
