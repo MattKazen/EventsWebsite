@@ -1,77 +1,153 @@
 ﻿@model IEnumerable<COP4710_V2.Models.Events>
 
 @{
-    ViewData["Title"] = "Index";
+	ViewData["Title"] = "Index";
 }
 
-<h2>Index</h2>
+<h2>Events Waiting Approval</h2>
 
 <table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.EventName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StartTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StartDay)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StartMonth)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EventDesc)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Category)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ContactPhone)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ContactEmail)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Location)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {	
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.EventName) 
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartDay)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartMonth)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EventDesc)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Category)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ContactPhone)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ContactEmail)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Location.LocationId)
-            </td>
-            <td>
-				<a asp-controller="Events" asp-action="EventsApprove" asp-route-id="@item.EventId">Approve Event!</a>
-            </td>
-        </tr>}
-    </tbody>
+	<thead>
+		<tr>
+			<th>
+				@Html.DisplayNameFor(model => model.EventName)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.StartTime)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.StartDay)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.StartMonth)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.EventDesc)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Category)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.ContactPhone)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.ContactEmail)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Location)
+			</th>
+			<th></th>
+		</tr>
+	</thead>
+	
+	<tbody>
+		@foreach (var item in Model)
+		{
+			<tr>
+				<td>
+					@Html.DisplayFor(modelItem => item.EventName)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.StartTime)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.StartDay)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.StartMonth)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.EventDesc)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Category)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.ContactPhone)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.ContactEmail)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Location.LocationId)
+				</td>
+				<td>
+					<a asp-controller="Events" asp-action="EventsApprove" asp-route-id="@item.EventId">Approve Event!</a>
+				</td>
+			</tr>}
+	</tbody>
 </table>
+
+<h2>Approved Events</h2>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>
+				@Html.DisplayNameFor(model => model.EventName)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.StartTime)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.StartDay)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.StartMonth)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.EventDesc)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Category)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.ContactPhone)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.ContactEmail)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Location)
+			</th>
+			<th></th>
+		</tr>
+	</thead>
+
+
+	<tbody>
+		@foreach (var item in ViewBag.NonPendingEvents)
+		{
+			<tr>
+				<td>
+					@item.EventName
+				</td>
+				<td>
+					@item.StartTime
+				</td>
+				<td>
+					@item.StartDay
+				</td>
+				<td>
+					@item.StartMonth
+				</td>
+				<td>
+					@item.EventDesc
+				</td>
+				<td>
+					@item.Category
+				</td>
+				<td>
+					@item.ContactPhone
+				</td>
+				<td>
+					@item.ContactEmail
+				</td>
+				<td>
+					@item.Location.LocationId
+				</td>
+
+			</tr>}
+	</tbody>
+</table>
+

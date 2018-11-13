@@ -25,7 +25,7 @@ namespace COP4710_V2.Controllers
         public async Task<IActionResult> Index()
         {
 			//Grabs all events in Events Table
-			var eventContext = _context.Events.Include(e => e.Location);
+			var eventContext =_context.Events.Include(e => e.Location);
 
 			//Selects all nonPendingEvents
 			var nonPendingEventContext = from b in eventContext
@@ -33,14 +33,11 @@ namespace COP4710_V2.Controllers
 										 select b;
 			
 			// Selects All Pending Events from Events Table
-			// Could grab _context.NonPendingEvents but would not contain all relevant data
-
 			var PendingEventContext =    from b in eventContext
 										 where (bool)b.IsPending
 										 select b;
 
-			///Attempted to use Stored Procedure
-			//var nonPendingEventContext = eventContext.FromSql("SelectNonPendingEvents");
+			ViewBag.NonPendingEvents= await nonPendingEventContext.ToListAsync();
 
 			//If the user is an admin, direct them to view with Create Button
 			if (isUserAdmin())
@@ -53,7 +50,7 @@ namespace COP4710_V2.Controllers
 				return View("EventsApprove", await PendingEventContext.ToListAsync());
 			}
 
-			//If user is not admin, direct them to view without create button;	
+			//If user is not admin or SuperAdmin, direct them to view without create button;	
 			else
 				return View("IndexForUsers", await eventContext.ToListAsync());
         }
@@ -61,11 +58,12 @@ namespace COP4710_V2.Controllers
 
 
         // GET: Events/Create
+		// ONLY admins can Create so No need to check
         public IActionResult Create()
         {
 			//Grabs list of Possible Locations to put the Event at
-			ViewData["LocationId"] = new SelectList(_context.EventLocation, "LocationId", "LocationId");
-
+			ViewData["LocationId"] = new SelectList(_context.EventLocation, "LocationId", "LocationName");
+			
 			return View();
         }
 
@@ -199,18 +197,19 @@ namespace COP4710_V2.Controllers
 			//Removes it from Table
 			 _context.PendingEvents.Remove(SelectedEvent);
 
-			//Updates
+			//Updates Removcal
 			await _context.SaveChangesAsync();
 
-			//Updates the model with the Approved ID
+			//Adds SuperModelID to PendingEventModel
 			SelectedEvent.ApproverId = UserID;
 
-			//Adds the Inserted Model back into the table
-			
+			// Adds the Inserted Model back into the table 
+			// Causing Triggers to Update IsPending to 0 
+			// Thus Removing PendingEvent Entity from the 
+			// PendingEventTable by another Trigger
 			await _context.PendingEvents.AddAsync(SelectedEvent);
 
 			await _context.SaveChangesAsync();
-
 
 			return RedirectToAction("Index", "Events", "");
 		}
