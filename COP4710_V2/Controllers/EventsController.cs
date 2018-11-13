@@ -56,11 +56,22 @@ namespace COP4710_V2.Controllers
         }
 
 
-
         // GET: Events/Create
 		// ONLY admins can Create so No need to check
         public IActionResult Create()
         {
+
+			String userEmail = User.Identity.Name;
+
+			var currentUser = _context.AspNetUsers
+					.Where(b => b.Email == userEmail)
+					.FirstOrDefault();
+
+			//Preloads Users Email and Phone in contact info
+			ViewData["UserEmail"] = userEmail;
+			ViewData["UserPhone"] = currentUser.PhoneNumber;
+
+			
 			//Grabs list of Possible Locations to put the Event at
 			ViewData["LocationId"] = new SelectList(_context.EventLocation, "LocationId", "LocationName");
 			
@@ -73,11 +84,8 @@ namespace COP4710_V2.Controllers
         public async Task<IActionResult> Create([Bind("EventId,LocationId,EventName,StartTime,StartDay," 
 										+"StartMonth,EventDesc,Category,ContactPhone,ContactEmail")]Events events)
         {
-			//Determines Type of Event
-			String EventType = Request.Form["EventType"];
-			Debug.WriteLine("TYPE OF EVENT" + EventType);
-			//////////////// ////////////////////////////////////////////////////////////
-			EventType = "Public";
+			
+			String EventType = "Public";
 
 			if (ModelState.IsValid)
             {
@@ -86,20 +94,32 @@ namespace COP4710_V2.Controllers
 				//Add Created Event to Events Table
 				_context.Add(events);
 
-				//If Public Event --> Insert PendingEvent into Pending Events Table
+				//If NonRSO Event --> Insert PendingEvent Model into Pending Events Table
 				//Approver remains null until SuperAdmin Approves
-				PendingEvents newEvent = new PendingEvents();
-				newEvent.PendingEventId = events.EventId;
-				newEvent.CreatorId = getUserID();
-
+				PendingEvents newPendingEvent = new PendingEvents();
+				newPendingEvent.PendingEventId = events.EventId;
+				newPendingEvent.CreatorId = getUserID();
+				newPendingEvent.ApproverId = null;
+				
+				
 				if (EventType == "Public")
 				{
-					_context.Add(newEvent);
+					PubEvents newPubEvent = new PubEvents();
+					newPubEvent.PublicEventId = events.EventId;
+
+					//Add to Pending and public table
+					_context.Add(newPendingEvent);
+					_context.Add(newPubEvent);
 				}
 
 				else if (EventType == "Private")
 				{
-					_context.Add(newEvent);
+					PrivEvents newPrivEvent = new PrivEvents();
+					newPrivEvent.PrivateEventId = events.EventId;
+
+					//Adds to Pending and private table
+					_context.Add(newPendingEvent);
+					_context.Add(newPrivEvent);
 				}
 				//RSO Event --> Automatically created
 				//Need to check for User's RSO affiliation and add to RsoEventsTable

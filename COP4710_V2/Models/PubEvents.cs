@@ -8,6 +8,5 @@ namespace COP4710_V2.Models
         public int PublicEventId { get; set; }
 
         public Events PublicEvent { get; set; }
-        public CreatesPubEvents CreatesPubEvents { get; set; }
     }
 }

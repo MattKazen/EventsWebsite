@@ -32,6 +32,7 @@ namespace COP4710_V2.Models
 
         public Admins Admins { get; set; }
         public Superadmins Superadmins { get; set; }
+        public UserUniversity UserUniversity { get; set; }
         public ICollection<AspNetUserClaims> AspNetUserClaims { get; set; }
         public ICollection<AspNetUserLogins> AspNetUserLogins { get; set; }
         public ICollection<AspNetUserRoles> AspNetUserRoles { get; set; }

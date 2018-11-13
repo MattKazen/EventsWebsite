@@ -24,8 +24,6 @@ namespace COP4710_V2.Models
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
         public virtual DbSet<AspNetUserTokens> AspNetUserTokens { get; set; }
         public virtual DbSet<Comments> Comments { get; set; }
-        public virtual DbSet<CreatesPrivEvents> CreatesPrivEvents { get; set; }
-        public virtual DbSet<CreatesPubEvents> CreatesPubEvents { get; set; }
         public virtual DbSet<EventLocation> EventLocation { get; set; }
         public virtual DbSet<Events> Events { get; set; }
         public virtual DbSet<PendingEvents> PendingEvents { get; set; }
@@ -36,6 +34,7 @@ namespace COP4710_V2.Models
         public virtual DbSet<RsoEvents> RsoEvents { get; set; }
         public virtual DbSet<Superadmins> Superadmins { get; set; }
         public virtual DbSet<University> University { get; set; }
+        public virtual DbSet<UserUniversity> UserUniversity { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -199,68 +198,6 @@ namespace COP4710_V2.Models
                     .HasConstraintName("FK__comments__UserId__7B5B524B");
             });
 
-            modelBuilder.Entity<CreatesPrivEvents>(entity =>
-            {
-                entity.HasKey(e => e.PrivateEventId);
-
-                entity.ToTable("creates_priv_events");
-
-                entity.Property(e => e.PrivateEventId)
-                    .HasColumnName("Private_Event_ID")
-                    .ValueGeneratedNever();
-
-                entity.Property(e => e.AdminId).HasMaxLength(450);
-
-                entity.Property(e => e.SuperAdminId).HasMaxLength(450);
-
-                entity.HasOne(d => d.Admin)
-                    .WithMany(p => p.CreatesPrivEvents)
-                    .HasForeignKey(d => d.AdminId)
-                    .HasConstraintName("FK__creates_p__Admin__2CF2ADDF");
-
-                entity.HasOne(d => d.PrivateEvent)
-                    .WithOne(p => p.CreatesPrivEvents)
-                    .HasForeignKey<CreatesPrivEvents>(d => d.PrivateEventId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__creates_p__Priva__2B0A656D");
-
-                entity.HasOne(d => d.SuperAdmin)
-                    .WithMany(p => p.CreatesPrivEvents)
-                    .HasForeignKey(d => d.SuperAdminId)
-                    .HasConstraintName("FK__creates_p__Super__2BFE89A6");
-            });
-
-            modelBuilder.Entity<CreatesPubEvents>(entity =>
-            {
-                entity.HasKey(e => e.PublicEventId);
-
-                entity.ToTable("creates_pub_events");
-
-                entity.Property(e => e.PublicEventId)
-                    .HasColumnName("Public_Event_ID")
-                    .ValueGeneratedNever();
-
-                entity.Property(e => e.AdminId).HasMaxLength(450);
-
-                entity.Property(e => e.SuperAdminId).HasMaxLength(450);
-
-                entity.HasOne(d => d.Admin)
-                    .WithMany(p => p.CreatesPubEvents)
-                    .HasForeignKey(d => d.AdminId)
-                    .HasConstraintName("FK__creates_p__Admin__3C34F16F");
-
-                entity.HasOne(d => d.PublicEvent)
-                    .WithOne(p => p.CreatesPubEvents)
-                    .HasForeignKey<CreatesPubEvents>(d => d.PublicEventId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__creates_p__Publi__3A4CA8FD");
-
-                entity.HasOne(d => d.SuperAdmin)
-                    .WithMany(p => p.CreatesPubEvents)
-                    .HasForeignKey(d => d.SuperAdminId)
-                    .HasConstraintName("FK__creates_p__Super__3B40CD36");
-            });
-
             modelBuilder.Entity<EventLocation>(entity =>
             {
                 entity.HasKey(e => e.LocationId);
@@ -325,18 +262,18 @@ namespace COP4710_V2.Models
                 entity.HasOne(d => d.Approver)
                     .WithMany(p => p.PendingEvents)
                     .HasForeignKey(d => d.ApproverId)
-                    .HasConstraintName("FK__PendingEv__Appro__6501FCD8");
+                    .HasConstraintName("FK__PendingEv__Appro__7167D3BD");
 
                 entity.HasOne(d => d.Creator)
                     .WithMany(p => p.PendingEvents)
                     .HasForeignKey(d => d.CreatorId)
-                    .HasConstraintName("FK__PendingEv__Creat__640DD89F");
+                    .HasConstraintName("FK__PendingEv__Creat__7073AF84");
 
                 entity.HasOne(d => d.PendingEvent)
                     .WithOne(p => p.PendingEvents)
                     .HasForeignKey<PendingEvents>(d => d.PendingEventId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__PendingEv__Pendi__6319B466");
+                    .HasConstraintName("FK__PendingEv__Pendi__6F7F8B4B");
             });
 
             modelBuilder.Entity<PrivEvents>(entity =>
@@ -485,6 +422,30 @@ namespace COP4710_V2.Models
                     .HasForeignKey(d => d.CreatorId)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_create_uni_creatorID");
+            });
+
+            modelBuilder.Entity<UserUniversity>(entity =>
+            {
+                entity.HasKey(e => e.StudentId);
+
+                entity.Property(e => e.StudentId)
+                    .HasColumnName("StudentID")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.UniversityId)
+                    .HasColumnName("UniversityID")
+                    .HasMaxLength(50);
+
+                entity.HasOne(d => d.Student)
+                    .WithOne(p => p.UserUniversity)
+                    .HasForeignKey<UserUniversity>(d => d.StudentId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__UserUnive__Stude__6BAEFA67");
+
+                entity.HasOne(d => d.University)
+                    .WithMany(p => p.UserUniversity)
+                    .HasForeignKey(d => d.UniversityId)
+                    .HasConstraintName("FK__UserUnive__Unive__6ABAD62E");
             });
         }
     }
