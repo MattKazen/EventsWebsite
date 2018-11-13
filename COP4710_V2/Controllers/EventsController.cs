@@ -32,6 +32,8 @@ namespace COP4710_V2.Controllers
 										 where (bool) !b.IsPending
 										 select b;
 
+			//var nonPendingEventContext = eventContext.FromSql("SelectNonPendingEvents");
+
 			//If the user is an admin, direct them to view with Create Button
 			if (isUserAdmin())
 				return View("IndexForAdmins", await nonPendingEventContext.ToListAsync());
@@ -123,6 +125,7 @@ namespace COP4710_V2.Controllers
 				await _context.SaveChangesAsync();
 
 				//Selects all nonPendingEvents
+				//QUERY CAN BE PUT AS STORED PR
 				var nonPendingEventContext = from b in _context.Events
 											 where (bool)!b.IsPending
 											 select b;
