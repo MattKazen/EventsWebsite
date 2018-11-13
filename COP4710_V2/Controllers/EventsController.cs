@@ -202,14 +202,12 @@ namespace COP4710_V2.Controllers
 			//Updates
 			await _context.SaveChangesAsync();
 
-			//Adds the Inserted Model back into the table
+			//Updates the model with the Approved ID
 			SelectedEvent.ApproverId = UserID;
 
+			//Adds the Inserted Model back into the table
+			
 			await _context.PendingEvents.AddAsync(SelectedEvent);
-
-			String UnPendingId = "'" + SelectedEvent.PendingEventId + "'";
-
-			_context.Events.FromSql("EventApproved " + "UnPendingId");
 
 			await _context.SaveChangesAsync();
 
