@@ -74,7 +74,8 @@ namespace COP4710_V2
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
-            });
+
+			});
         }
     }
 }

@@ -19,11 +19,15 @@ namespace COP4710_V2.Controllers
         }
 
 		//Given UserEmail returns Corresponding ID
-		private String getIdFromEmail(String email)
+		private String getIdFromEmail()
 		{
-			AspNetUsers currentUser = _context.AspNetUsers.FromSql("emailtoID '" + email + "'").FirstOrDefault();
+			String email = "'" + User.Identity.Name+ "'" ;
+
+			AspNetUsers currentUser = _context.AspNetUsers.FromSql("emailtoID " + email).FirstOrDefault();
+
 			return currentUser.Id;
 		}
+
 		// GET: Universities
 		public async Task<IActionResult> Index()
         {
@@ -33,7 +37,7 @@ namespace COP4710_V2.Controllers
 			// If user is a Super Admin return("IndexforSAdmins")
 			var currentUserEmail = User.Identity.Name;
 
-			var currentUserID = getIdFromEmail(currentUserEmail);
+			var currentUserID = getIdFromEmail();
 			
 			// Queries SAdmin table for Current User ID
 			var isUserSAdmin = (from A in _context.Superadmins
@@ -83,7 +87,7 @@ namespace COP4710_V2.Controllers
             if (ModelState.IsValid)
             {
 				//Adds User key to University Class
-				university.CreatorId = getIdFromEmail(User.Identity.Name);
+				university.CreatorId = getIdFromEmail();
 
 				//Add University to Database
 				_context.Add(university);
