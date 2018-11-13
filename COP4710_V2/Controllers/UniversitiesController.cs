@@ -78,7 +78,7 @@ namespace COP4710_V2.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("UniName,UniDesc,UniLocation,NumStudents")] University university)
+        public async Task<IActionResult> Create([Bind("UniName,UniDesc,UniLocation,NumStudents, UniEmail")] University university)
         {
             if (ModelState.IsValid)
             {
