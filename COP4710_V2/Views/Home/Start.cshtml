@@ -1,0 +1,16 @@
+﻿@model IEnumerable<COP4710_V2.Models.Rso>
+    @{
+        ViewData["Title"] = "Start";
+    }
+
+    <h2>Start</h2>
+    <p>User is @ViewBag.user.Email</p>
+    <p> Uni is @ViewBag.uni.UniName</p>
+
+    @foreach (var item in Model)
+    {
+        <p>@item.Name</p>
+    }
+
+    
+

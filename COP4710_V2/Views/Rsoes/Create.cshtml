@@ -1,0 +1,43 @@
+﻿@model COP4710_V2.Models.Rso
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Create</h2>
+
+<h4>Rso</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="NumMembers" class="control-label"></label>
+                <input asp-for="NumMembers" class="form-control" />
+                <span asp-validation-for="NumMembers" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RsoAdminId" class="control-label"></label>
+                <select asp-for="RsoAdminId" class ="form-control" asp-items="ViewBag.RsoAdminId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="RsoUniversityId" class="control-label"></label>
+                <select asp-for="RsoUniversityId" class ="form-control" asp-items="ViewBag.RsoUniversityId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="IsPending" class="control-label"></label>
+                <input asp-for="IsPending" class="form-control" />
+                <span asp-validation-for="IsPending" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

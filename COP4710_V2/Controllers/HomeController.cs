@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using COP4710_V2.Models;
 using System.Data;
 using System.Data.SqlClient;
-
-
+using static Microsoft.AspNetCore.Hosting.Internal.HostingApplication;
+using Microsoft.EntityFrameworkCore;
 
 namespace COP4710_V2.Controllers
 {
@@ -16,10 +16,15 @@ namespace COP4710_V2.Controllers
     {
 		private String ConnectionString = "server=cop4017-2.database.windows.net;database=University Event;" +
 											"uid=dbadmin;pwd=Ucfdbs!!";
+        private readonly UniversityEventContext _context;
 
-		// A method that can be called by passing in a query and it will return a DataTable
-		// for however the table needs to be processed
-		DataTable GetDataFromQuery(string query)
+        public HomeController(UniversityEventContext context)
+        {
+            _context = context;
+        }
+        // A method that can be called by passing in a query and it will return a DataTable
+        // for however the table needs to be processed
+        DataTable GetDataFromQuery(string query)
 		{
 			SqlDataAdapter adap =
 				 new SqlDataAdapter(query, ConnectionString);
@@ -91,7 +96,7 @@ namespace COP4710_V2.Controllers
 		public IActionResult Index()
         {
             if (User.Identity.IsAuthenticated)
-                return RedirectToAction("Index", "Universities", "");
+                return RedirectToAction("Start", "Home", "");
             return View();
         }
 
@@ -118,6 +123,20 @@ namespace COP4710_V2.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public async Task<IActionResult> Start()
+        {
+            
+            AspNetUsers user = _context.AspNetUsers.FromSql("EXECUTE emailToId @email ='" + User.Identity.Name + "'").FirstOrDefault();
+            University uni = _context.University.FromSql("EXECUTE idToUni @userId = '" + user.Id + "'").ToList().FirstOrDefault();
+            //Rso rso = _context.Rso.FromSql("EXECUTE findRsoByUni @UniId ='" + uni.UniEmail + "'").;
+            var rso = _context.Rso.Where(x => x.RsoUniversityId == uni.UniName);
+
+            ViewBag.uni = uni;
+            ViewBag.user = user;
+
+            return View(rso);
         }
     }
 }

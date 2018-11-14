@@ -1,0 +1,45 @@
+﻿@model COP4710_V2.Models.Rso
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Rso</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.NumMembers)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.NumMembers)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.IsPending)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.IsPending)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.RsoAdmin)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.RsoAdmin.AdminId)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.RsoUniversity)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.RsoUniversity.UniName)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="RsoId" />
+        <input type="submit" value="Delete" class="btn btn-default" /> |
+        <a asp-action="Index">Back to List</a>
+    </form>
+</div>

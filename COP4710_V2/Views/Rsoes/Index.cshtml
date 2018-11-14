@@ -1,0 +1,53 @@
+﻿@model IEnumerable<COP4710_V2.Models.Rso>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.NumMembers)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsPending)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RsoAdmin)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RsoUniversity)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.NumMembers)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsPending)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RsoAdmin.AdminId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RsoUniversity.UniName)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.RsoId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.RsoId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.RsoId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

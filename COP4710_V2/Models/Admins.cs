@@ -8,13 +8,15 @@ namespace COP4710_V2.Models
         public Admins()
         {
             PendingEvents = new HashSet<PendingEvents>();
-            RsoCreatesEvents = new HashSet<RsoCreatesEvents>();
+            Rso = new HashSet<Rso>();
+            RsoEvents = new HashSet<RsoEvents>();
         }
 
         public string AdminId { get; set; }
 
         public AspNetUsers Admin { get; set; }
         public ICollection<PendingEvents> PendingEvents { get; set; }
-        public ICollection<RsoCreatesEvents> RsoCreatesEvents { get; set; }
+        public ICollection<Rso> Rso { get; set; }
+        public ICollection<RsoEvents> RsoEvents { get; set; }
     }
 }
