@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using COP4710_V2.Models;
 using System.Diagnostics;
+using System.Reflection.Metadata;
 
 namespace COP4710_V2.Controllers
 {
@@ -84,9 +85,6 @@ namespace COP4710_V2.Controllers
         public async Task<IActionResult> Create([Bind("EventId,LocationId,EventName,StartTime,StartDay," 
 										+"StartMonth,EventDesc,Category,ContactPhone,ContactEmail")]Events events)
         {
-			
-			String EventType = "Public";
-
 			if (ModelState.IsValid)
             {
 
@@ -100,9 +98,11 @@ namespace COP4710_V2.Controllers
 				newPendingEvent.PendingEventId = events.EventId;
 				newPendingEvent.CreatorId = getUserID();
 				newPendingEvent.ApproverId = null;
-				
-				
-				if (EventType == "Public")
+
+				//Grabs the users Selected Event Type (pub/priv/RSO)
+				String EventType = Request.Form["EventType"].ToString();
+
+				if (EventType == "Public Event")
 				{
 					PubEvents newPubEvent = new PubEvents();
 					newPubEvent.PublicEventId = events.EventId;
@@ -112,7 +112,7 @@ namespace COP4710_V2.Controllers
 					_context.Add(newPubEvent);
 				}
 
-				else if (EventType == "Private")
+				else if (EventType == "Private Event")
 				{
 					PrivEvents newPrivEvent = new PrivEvents();
 					newPrivEvent.PrivateEventId = events.EventId;
@@ -123,7 +123,7 @@ namespace COP4710_V2.Controllers
 				}
 				//RSO Event --> Automatically created
 				//Need to check for User's RSO affiliation and add to RsoEventsTable
-				else if(EventType == "RSO")
+				else if(EventType == "RSO Event")
 				{
 					RsoEvents EventRSO = new RsoEvents();
 					EventRSO.RsoEventId = events.EventId;
