@@ -86,39 +86,6 @@ namespace COP4710_V2.Controllers
 			return RedirectToAction("Index", new { id = comments.EventId }); 
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         // GET: Comments/Edit/5
         public async Task<IActionResult> Edit(string id)
         {

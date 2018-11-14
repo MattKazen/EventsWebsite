@@ -1,0 +1,37 @@
+﻿@model COP4710_V2.Models.Rso
+
+<div>
+    <h4>This is the RSO you want to join?</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+     
+        <dt>
+            @Html.DisplayNameFor(model => model.NumMembers)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.NumMembers)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.RsoAdmin)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.RsoAdmin.AdminEmail)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.RsoUniversity)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.RsoUniversity.UniName)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="JoinRsoConfirm" asp-controller="Rsoes" asp-route-id="@Model.RsoId">Join this Rso!</a> |
+	<a asp-action="Index">Back to List</a>
+</div>

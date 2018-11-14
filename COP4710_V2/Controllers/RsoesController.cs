@@ -36,12 +36,8 @@ namespace COP4710_V2.Controllers
 
 			var UserId = getCurrentUser().Id;
 
-		/*	var AffiliateRsoContext = _context.Rso
-											  .Include(r => r.RsoAdmin)
-											  .Include(r => r.RsoUniversity)
-											  .Include(r => r.StudentsInRsos)
-											  .Where(r => UserId ;
-											  */
+			
+			var AffiliateRsoContext = _context.StudentsInRsos.Where(r => r.StudentId == UserId);										  
 
 			return View(await AllRsoContext.ToListAsync());
         }
@@ -60,7 +56,6 @@ namespace COP4710_V2.Controllers
 										 .Where(b => b.StudentId == userId)
 										 .FirstOrDefault()
 										 .UniversityId;
-
 
 
 			ViewData["CreatorId"] = userId;
@@ -89,13 +84,6 @@ namespace COP4710_V2.Controllers
 				PRso.PendingRsoCreator = getCurrentUser();
 				PRso.PendingRsoUniversityId = rso.RsoUniversityId;
 
-			///In case IsPending doesn't work. 
-			/*	//Strip all values from rso (except rsoId)
-				rso.NumMembers = null;
-				rso.RsoAdminId = null;
-				rso.RsoUniversityId = null;
-				_context.Update(rso); */
-
 
 				//Add PendingRso To Table
 				await _context.AddAsync(PRso);
@@ -108,10 +96,40 @@ namespace COP4710_V2.Controllers
 			return RedirectToAction(nameof(Index));
         }
 
-       
+		public async Task<IActionResult> JoinRsoConfirm(int id)
+		{
+			var RsoId = id;
+			var currentUser = getCurrentUser().Id;
 
-        // GET: Rsoes/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+			//Create new StudentsInRsos Model
+			StudentsInRsos newRsoMember = new StudentsInRsos();
+			newRsoMember.StudentId = currentUser;
+			newRsoMember.MemberofRso = RsoId;
+
+			//Add to table
+			await _context.AddAsync(newRsoMember);
+
+			await _context.SaveChangesAsync();
+
+			//Return to Index Action
+			return RedirectToAction(nameof(Index));
+		}
+
+		public async Task<IActionResult> JoinRso(int id)
+		{
+			var RsoId = id;
+
+			//Grab Selected Rso with Corresponding Admin and University
+			var RsoContext = await _context.Rso.Where(r => r.RsoId ==id)
+												.Include(r => r.RsoAdmin)
+												.Include(r => r.RsoUniversity)
+												.FirstAsync();
+
+			return View(RsoContext);
+		}
+		
+		// GET: Rsoes/Delete/5
+		public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
@@ -140,25 +158,6 @@ namespace COP4710_V2.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-		// GET: Rsoes/Details/5
-		public async Task<IActionResult> Details(int? id)
-		{
-			if (id == null)
-			{
-				return NotFound();
-			}
-
-			var rso = await _context.Rso
-				.Include(r => r.RsoAdmin)
-				.Include(r => r.RsoUniversity)
-				.FirstOrDefaultAsync(m => m.RsoId == id);
-			if (rso == null)
-			{
-				return NotFound();
-			}
-
-			return View(rso);
-		}
 
 	
 		[HttpPost]

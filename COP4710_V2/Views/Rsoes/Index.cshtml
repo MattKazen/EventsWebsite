@@ -4,14 +4,20 @@
     ViewData["Title"] = "Index";
 }
 
-<h2>All RSO's for Your University</h2>
+<h2>All RSO's</h2>
 
 <p>
     <a asp-action="Create">Start your own! (Minimum 5 members)</a>
 </p>
+
+
 <table class="table">
     <thead>
 		<tr>
+			<th>
+				@Html.DisplayNameFor(model => model.RsoId)
+			</th>
+			
 			<th>
 				@Html.DisplayNameFor(model => model.Name)
 			</th>
@@ -29,8 +35,12 @@
     </thead>
     <tbody>
 
-@foreach (var item in Model) {
+@foreach (var item in Model)
+{
 		<tr>
+			<td>
+				@Html.DisplayFor(modelItem => item.RsoId)
+			</td>
 			<td>
 				@Html.DisplayFor(modelItem => item.Name)
 			</td>
@@ -42,6 +52,13 @@
 			</td>
 			<td>
 				@Html.DisplayFor(modelItem => item.NumMembers)
+			</td>
+			<td>
+				<a asp-action="JoinRso" asp-route-id="@item.RsoId">Join Rso</a>
+
+				<a asp-action="Edit" asp-route-id="@item.RsoId">Edit</a> |
+				<a asp-action="Details" asp-route-id="@item.RsoId">Details</a> |
+				<a asp-action="Delete" asp-route-id="@item.RsoId">Delete</a>
 			</td>
 
 		</tr>

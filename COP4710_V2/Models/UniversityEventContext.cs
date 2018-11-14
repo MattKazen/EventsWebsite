@@ -285,6 +285,8 @@ namespace COP4710_V2.Models
 
                 entity.Property(e => e.PendingRsoCreatorId).HasMaxLength(450);
 
+                entity.Property(e => e.PendingRsoName).HasMaxLength(50);
+
                 entity.Property(e => e.PendingRsoUniversityId).HasMaxLength(50);
 
                 entity.HasOne(d => d.PendingRsoCreator)
@@ -336,7 +338,7 @@ namespace COP4710_V2.Models
 
             modelBuilder.Entity<Rso>(entity =>
             {
-                entity.Property(e => e.Name).HasMaxLength(450);
+                entity.Property(e => e.Name).HasMaxLength(50);
 
                 entity.Property(e => e.RsoAdminId).HasMaxLength(450);
 

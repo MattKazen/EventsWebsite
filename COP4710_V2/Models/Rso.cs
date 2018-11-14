@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace COP4710_V2.Models
 {
@@ -12,11 +13,17 @@ namespace COP4710_V2.Models
         }
 
         public int RsoId { get; set; }
-        public int? NumMembers { get; set; }
+
+		[Display(Name = "Number of Members")]
+		public int? NumMembers { get; set; }
         public string RsoAdminId { get; set; }
-        public string RsoUniversityId { get; set; }
+
+		[Display(Name = "University")]
+		public string RsoUniversityId { get; set; }
         public bool? IsPending { get; set; }
-        public string Name { get; set; }
+
+		[Display(Name = "Name of Rso")]
+		public string Name { get; set; }
 
         public Admins RsoAdmin { get; set; }
         public University RsoUniversity { get; set; }
