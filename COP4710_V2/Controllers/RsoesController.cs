@@ -20,28 +20,53 @@ namespace COP4710_V2.Controllers
         }
 
         // GET: Rsoes
-        public async Task<IActionResult> Index()
+		// Id refers to Which set of RSO's the users want to view
+		// Default will be the Universities RSO
+        public async Task<IActionResult> Index(String id)
         {
-			//Grabs All RS
-			//Also note .ThenInclude() Lets you traverse through relationships
-			var AllRsoContext = _context.Rso
-										.Include(r => r.RsoUniversity)
-										.Include(r => r.RsoAdmin)
-											.ThenInclude(r => r.Admin);
-										
-
-			var PendingRsoContext = _context.PendingRso
-											.Include(r => r.PendingRsoCreator)
-											.Include(r => r.PendingRsoUniversity);
+			var Filter = id;
 
 			var UserId = getCurrentUser().Id;
 
-			
-			var AffiliateRsoContext = _context.StudentsInRsos.Where(r => r.StudentId == UserId);										  
+			// Context with ALL Rso Models
+			var AllRsoContext = _context.Rso
+										.Include(r => r.RsoUniversity)
+										.Include(r => r.RsoAdmin);
 
+			// Context with ALL PendingRSO Models
+			var AllPendingRsoContext = _context.PendingRso
+												.Include(r => r.PendingRsoUniversity)
+												.Include(r => r.PendingRsoCreator);
+
+
+			// Context Containing Users University Model
+			var UniversityContext = await _context.UserUniversity
+												 .Where(x => x.StudentId == UserId)
+												 .FirstAsync();
+
+			// String Containing Users University ID
+			var UsersUniversityID = UniversityContext.UniversityId;
+
+			// Context Containing All RSO where the Rso is at Users University
+			// References Context AllRsoContext created above containing Relationships
+
+			var UniversityOnlyRsoContext = AllRsoContext.Where(x => x.RsoUniversityId == UsersUniversityID);
+
+			var MemberOfRsoContext = _context.StudentsInRsos
+											 .Where(r => r.StudentId == UserId);
+
+			// If user Selected Filter University Pass UniversityOnlyRsoContext to 
+
+			if (Filter == "University")
+			{
+				return View(await UniversityOnlyRsoContext.ToListAsync()); 
+			}
+
+
+
+			// If no filters set look at al
 			return View(await AllRsoContext.ToListAsync());
         }
-
 
 
         // GET: Rsoes/Create
@@ -72,13 +97,20 @@ namespace COP4710_V2.Controllers
             if (ModelState.IsValid)
             {
 				rso.IsPending = true;
-				//Add Rso To DB so Pending Event can be made
+				// Add Have to remove AdminID As RsoAdmin References Admins
+				// The user is not put into admin table until their Rso is
+				// NOT PENDING. Creator ID is saved into the PendingRso Table
+				// WHen Switching from Pending--> Not Pending RSO CreatorID must first
+				// be added to admins Table (WITH EMAIL)
+
+				rso.RsoAdminId = null;
 				await _context.AddAsync(rso);
 
 				await _context.SaveChangesAsync();
 
 				// Make a copy of RSO in PendingRso Model and Add to Database
 				PendingRso PRso = new PendingRso();
+				PRso.PendingRsoName = rso.Name;
 				PRso.PendingRsoId = rso.RsoId;
 				PRso.PendingNumMem = rso.NumMembers;
 				PRso.PendingRsoCreator = getCurrentUser();
