@@ -12,6 +12,7 @@ namespace COP4710_V2.Models
         }
 
         public string SuperAdminId { get; set; }
+        public string SuperAdminEmail { get; set; }
 
         public AspNetUsers SuperAdmin { get; set; }
         public ICollection<PendingEvents> PendingEvents { get; set; }

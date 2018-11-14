@@ -12,6 +12,8 @@ namespace COP4710_V2.Models
             AspNetUserRoles = new HashSet<AspNetUserRoles>();
             AspNetUserTokens = new HashSet<AspNetUserTokens>();
             Comments = new HashSet<Comments>();
+            PendingRso = new HashSet<PendingRso>();
+            StudentsInRsos = new HashSet<StudentsInRsos>();
         }
 
         public string Id { get; set; }
@@ -38,5 +40,7 @@ namespace COP4710_V2.Models
         public ICollection<AspNetUserRoles> AspNetUserRoles { get; set; }
         public ICollection<AspNetUserTokens> AspNetUserTokens { get; set; }
         public ICollection<Comments> Comments { get; set; }
+        public ICollection<PendingRso> PendingRso { get; set; }
+        public ICollection<StudentsInRsos> StudentsInRsos { get; set; }
     }
 }

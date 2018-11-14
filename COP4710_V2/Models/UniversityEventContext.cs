@@ -27,10 +27,12 @@ namespace COP4710_V2.Models
         public virtual DbSet<EventLocation> EventLocation { get; set; }
         public virtual DbSet<Events> Events { get; set; }
         public virtual DbSet<PendingEvents> PendingEvents { get; set; }
+        public virtual DbSet<PendingRso> PendingRso { get; set; }
         public virtual DbSet<PrivEvents> PrivEvents { get; set; }
         public virtual DbSet<PubEvents> PubEvents { get; set; }
         public virtual DbSet<Rso> Rso { get; set; }
         public virtual DbSet<RsoEvents> RsoEvents { get; set; }
+        public virtual DbSet<StudentsInRsos> StudentsInRsos { get; set; }
         public virtual DbSet<Superadmins> Superadmins { get; set; }
         public virtual DbSet<University> University { get; set; }
         public virtual DbSet<UserUniversity> UserUniversity { get; set; }
@@ -53,6 +55,8 @@ namespace COP4710_V2.Models
                 entity.ToTable("admins");
 
                 entity.Property(e => e.AdminId).ValueGeneratedNever();
+
+                entity.Property(e => e.AdminEmail).HasMaxLength(256);
 
                 entity.HasOne(d => d.Admin)
                     .WithOne(p => p.Admins)
@@ -275,11 +279,34 @@ namespace COP4710_V2.Models
                     .HasConstraintName("FK__PendingEv__Pendi__6F7F8B4B");
             });
 
+            modelBuilder.Entity<PendingRso>(entity =>
+            {
+                entity.Property(e => e.PendingRsoId).ValueGeneratedNever();
+
+                entity.Property(e => e.PendingRsoCreatorId).HasMaxLength(450);
+
+                entity.Property(e => e.PendingRsoUniversityId).HasMaxLength(50);
+
+                entity.HasOne(d => d.PendingRsoCreator)
+                    .WithMany(p => p.PendingRso)
+                    .HasForeignKey(d => d.PendingRsoCreatorId)
+                    .HasConstraintName("FK__PendingRs__Pendi__1699586C");
+
+                entity.HasOne(d => d.PendingRsoNavigation)
+                    .WithOne(p => p.PendingRso)
+                    .HasForeignKey<PendingRso>(d => d.PendingRsoId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__PendingRs__Pendi__15A53433");
+
+                entity.HasOne(d => d.PendingRsoUniversity)
+                    .WithMany(p => p.PendingRso)
+                    .HasForeignKey(d => d.PendingRsoUniversityId)
+                    .HasConstraintName("FK__PendingRs__Pendi__178D7CA5");
+            });
+
             modelBuilder.Entity<PrivEvents>(entity =>
             {
                 entity.HasKey(e => e.PrivateEventId);
-
-                entity.ToTable("priv_events");
 
                 entity.Property(e => e.PrivateEventId)
                     .HasColumnName("Private_Event_ID")
@@ -295,8 +322,6 @@ namespace COP4710_V2.Models
             modelBuilder.Entity<PubEvents>(entity =>
             {
                 entity.HasKey(e => e.PublicEventId);
-
-                entity.ToTable("pub_events");
 
                 entity.Property(e => e.PublicEventId)
                     .HasColumnName("Public_Event_ID")
@@ -358,6 +383,23 @@ namespace COP4710_V2.Models
                     .HasConstraintName("FK__RsoEvents__RsoEv__075714DC");
             });
 
+            modelBuilder.Entity<StudentsInRsos>(entity =>
+            {
+                entity.HasKey(e => new { e.StudentId, e.MemberofRso });
+
+                entity.HasOne(d => d.MemberofRsoNavigation)
+                    .WithMany(p => p.StudentsInRsos)
+                    .HasForeignKey(d => d.MemberofRso)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__StudentsI__Membe__0EF836A4");
+
+                entity.HasOne(d => d.Student)
+                    .WithMany(p => p.StudentsInRsos)
+                    .HasForeignKey(d => d.StudentId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__StudentsI__Stude__0E04126B");
+            });
+
             modelBuilder.Entity<Superadmins>(entity =>
             {
                 entity.HasKey(e => e.SuperAdminId);
@@ -365,6 +407,8 @@ namespace COP4710_V2.Models
                 entity.ToTable("superadmins");
 
                 entity.Property(e => e.SuperAdminId).ValueGeneratedNever();
+
+                entity.Property(e => e.SuperAdminEmail).HasMaxLength(256);
 
                 entity.HasOne(d => d.SuperAdmin)
                     .WithOne(p => p.Superadmins)

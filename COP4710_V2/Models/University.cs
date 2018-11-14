@@ -7,6 +7,7 @@ namespace COP4710_V2.Models
     {
         public University()
         {
+            PendingRso = new HashSet<PendingRso>();
             Rso = new HashSet<Rso>();
             UserUniversity = new HashSet<UserUniversity>();
         }
@@ -19,6 +20,7 @@ namespace COP4710_V2.Models
         public string UniEmail { get; set; }
 
         public Superadmins Creator { get; set; }
+        public ICollection<PendingRso> PendingRso { get; set; }
         public ICollection<Rso> Rso { get; set; }
         public ICollection<UserUniversity> UserUniversity { get; set; }
     }

@@ -13,6 +13,7 @@ namespace COP4710_V2.Models
         }
 
         public string AdminId { get; set; }
+        public string AdminEmail { get; set; }
 
         public AspNetUsers Admin { get; set; }
         public ICollection<PendingEvents> PendingEvents { get; set; }
