@@ -4,31 +4,22 @@
     ViewData["Title"] = "Index";
 }
 
-<h2>Index</h2>
+<h2>Comments for Event @ViewBag.EventName</h2>
 
 <p>
-    <a asp-action="Create">Create New</a>
+	<a asp-controller="Comments" asp-action="Create" asp-route-id="@ViewBag.EventId">Create New</a>
 </p>
 <table class="table">
     <thead>
         <tr>
+			<th>
+				Comment
+			</th>
             <th>
-                @Html.DisplayNameFor(model => model.CommentId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Text)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Rating)
+                @Html.DisplayNameFor(model => model.Rating) Stars
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Timestamp)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Event)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.User)
             </th>
             <th></th>
         </tr>
@@ -36,9 +27,6 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.CommentId)
-            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Text)
             </td>
@@ -49,12 +37,6 @@
                 @Html.DisplayFor(modelItem => item.Timestamp)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Event.EventId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.Id)
-            </td>
-            <td>
                 @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
                 @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
                 @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
@@ -63,3 +45,7 @@
 }
     </tbody>
 </table>
+
+<div>
+	<a asp-area="" asp-controller="Events" asp-action="Index">Back to Events</a>
+</div>

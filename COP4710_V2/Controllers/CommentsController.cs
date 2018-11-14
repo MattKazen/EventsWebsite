@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using COP4710_V2.Models;
+using System.Diagnostics;
 
 namespace COP4710_V2.Controllers
 {
@@ -19,57 +20,104 @@ namespace COP4710_V2.Controllers
         }
 
         // GET: Comments
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int Id)
         {
-            var universityEventContext = _context.Comments.Include(c => c.Event).Include(c => c.User);
-            return View(await universityEventContext.ToListAsync());
+
+			var SelectedEventId = Id;
+
+			// Grab all comments for chosen Event
+			var EventCommentContext = _context.Comments
+							     			  .Where(b => b.EventId == SelectedEventId);
+			
+			// Grab the Selected Event 
+			var EventContext = await _context.Events
+											 .Where(b => b.EventId == SelectedEventId)
+											 .FirstOrDefaultAsync();
+
+			//Pass View Name of Event
+			ViewData["EventName"] = EventContext.EventName;
+			ViewData["EventId"] = SelectedEventId;
+
+			return View(await EventCommentContext.ToListAsync());
         }
 
-        // GET: Comments/Details/5
-        public async Task<IActionResult> Details(string id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var comments = await _context.Comments
-                .Include(c => c.Event)
-                .Include(c => c.User)
-                .FirstOrDefaultAsync(m => m.UserId == id);
-            if (comments == null)
-            {
-                return NotFound();
-            }
-
-            return View(comments);
-        }
 
         // GET: Comments/Create
-        public IActionResult Create()
+        public IActionResult Create(int id)
         {
-            ViewData["EventId"] = new SelectList(_context.Events, "EventId", "EventId");
-            ViewData["UserId"] = new SelectList(_context.AspNetUsers, "Id", "Id");
-            return View();
+			var SelectedEventId = id;
+			//Get Event Name
+			var EventName = _context.Events
+									.Where(b => b.EventId == SelectedEventId)
+									.FirstOrDefault()
+									.EventName;
+
+			ViewData["EventName"] = EventName;
+			ViewData["EventId"] = SelectedEventId.ToString();
+
+			return View();
         }
 
-        // POST: Comments/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CommentId,EventId,UserId,Text,Rating,Timestamp")] Comments comments)
+        public async Task<IActionResult> Create(
+			[Bind("EventId, CommentId, Text, Rating")]
+			Comments comments)
         {
-            if (ModelState.IsValid)
+			//gets the Current Users ID
+			var CommenterId =  _context.AspNetUsers
+									.Where(b=> b.Email == User.Identity.Name)
+									.FirstOrDefault()
+									.Id;
+			//TimeStamp
+			DateTime Time = DateTime.Now;
+	
+			if (ModelState.IsValid)
             {
-                _context.Add(comments);
+				comments.UserId = CommenterId;
+				comments.Timestamp = Time;
+
+				_context.Add(comments);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
             }
-            ViewData["EventId"] = new SelectList(_context.Events, "EventId", "EventId", comments.EventId);
-            ViewData["UserId"] = new SelectList(_context.AspNetUsers, "Id", "Id", comments.UserId);
-            return View(comments);
+
+			return RedirectToAction("Index", new { id = comments.EventId }); 
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         // GET: Comments/Edit/5
         public async Task<IActionResult> Edit(string id)
@@ -89,9 +137,7 @@ namespace COP4710_V2.Controllers
             return View(comments);
         }
 
-        // POST: Comments/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+     
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("CommentId,EventId,UserId,Text,Rating,Timestamp")] Comments comments)
@@ -157,7 +203,27 @@ namespace COP4710_V2.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CommentsExists(string id)
+		// GET: Comments/Details/5
+		public async Task<IActionResult> Details(string id)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
+
+			var comments = await _context.Comments
+				.Include(c => c.Event)
+				.Include(c => c.User)
+				.FirstOrDefaultAsync(m => m.UserId == id);
+			if (comments == null)
+			{
+				return NotFound();
+			}
+
+			return View(comments);
+		}
+
+		private bool CommentsExists(string id)
         {
             return _context.Comments.Any(e => e.UserId == id);
         }

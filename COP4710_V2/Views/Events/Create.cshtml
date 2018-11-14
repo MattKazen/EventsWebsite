@@ -54,24 +54,21 @@
 			</div>
 			<div class="form-group">
 				<label asp-for="ContactEmail" class="control-label"></label>
-				<input asp-for="ContactEmail" class="form-control" placeholder="@ViewBag.UserEmail"/>
+				<input asp-for="ContactEmail" class="form-control" placeholder="@ViewBag.UserEmail" />
 				<span asp-validation-for="ContactEmail" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<select name="EventType">
+					<option>Public Event</option>
+					<option>Private Event</option>
+					<option>RSO</option>
+				</select>
 			</div>
 			<div class="form-group">
 				<input type="submit" value="Create" class="btn btn-default" />
 			</div>
 		</form>
-		<form method="POST">
-			<select id="Event Type">
-				<option value="Public">Public Event</option>
-				<option value="Private">Private Event</option>
-				<option value="RSO">RSO Event</option>
-			</select>
-		</form>
-
-
-
-			
+	
 	</div>
 </div>
 

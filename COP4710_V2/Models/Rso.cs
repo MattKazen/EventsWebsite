@@ -7,14 +7,18 @@ namespace COP4710_V2.Models
     {
         public Rso()
         {
-            RsoCreatesEvents = new HashSet<RsoCreatesEvents>();
             RsoEvents = new HashSet<RsoEvents>();
         }
 
         public int RsoId { get; set; }
-        public int? NumUsers { get; set; }
+        public int? NumMembers { get; set; }
+        public string RsoAdminId { get; set; }
+        public string RsoUniversityId { get; set; }
+        public bool? IsPending { get; set; }
+        public string Name { get; set; }
 
-        public ICollection<RsoCreatesEvents> RsoCreatesEvents { get; set; }
+        public Admins RsoAdmin { get; set; }
+        public University RsoUniversity { get; set; }
         public ICollection<RsoEvents> RsoEvents { get; set; }
     }
 }

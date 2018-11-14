@@ -6,10 +6,11 @@ namespace COP4710_V2.Models
     public partial class RsoEvents
     {
         public int RsoEventId { get; set; }
-        public int RsoId { get; set; }
+        public int Rso { get; set; }
+        public string CreatorId { get; set; }
 
-        public Rso Rso { get; set; }
+        public Admins Creator { get; set; }
         public Events RsoEvent { get; set; }
-        public RsoCreatesEvents RsoCreatesEvents { get; set; }
+        public Rso RsoNavigation { get; set; }
     }
 }

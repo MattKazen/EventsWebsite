@@ -72,15 +72,11 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Location.LocationId)
             </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.EventId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.EventId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.EventId">Delete</a>
-            </td>
+			<td>
+				<a asp-action="Delete" asp-route-id="@item.EventId">Delete</a>
+				<a asp-area="" asp-controller="Comments" asp-action="Index" asp-route-id="@item.EventId">View Comments</a>
+			</td>
         </tr>
-		<tf>
-			<li><a asp-area="" asp-controller="Comments" asp-action="Index">View Comments</a></li>
-		</tf>
 }
     </tbody>
 </table>
