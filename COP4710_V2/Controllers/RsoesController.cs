@@ -38,10 +38,10 @@ namespace COP4710_V2.Controllers
 
 			// Context with ALL Rso at Users University that are not pending Models
 			var NonPendingUniRsoContext = _context.Rso
-										.Include(r => r.RsoUniversity)
-										.Include(r => r.RsoAdmin)
-										.Where(x => x.RsoUniversityId == UsersUniversityID)
-										.Where(x => x.NumMembers >= 5); 
+													.Include(r => r.RsoUniversity)
+													.Include(r => r.RsoAdmin)
+														.Where(x => x.RsoUniversityId == UsersUniversityID)
+														.Where(x => x.NumMembers >= 5); 
 
 			ViewData["UniName"] = UsersUniversityID;
 
