@@ -96,11 +96,8 @@ namespace COP4710_V2.Controllers
 			
 			int EventCommentId = id;
 
-			var EditCommentContext = _context.Comments.Where(c => c.CommentId == EventCommentId);
-
-           
-			
-
+			var EditCommentContext = 
+					_context.Comments.Where(c => c.CommentId == EventCommentId);
 
             return View(EditCommentContext.FirstOrDefault());
         }
@@ -116,11 +113,6 @@ namespace COP4710_V2.Controllers
 
 				comments.Timestamp = DateTime.Now;
 
-			/*	var OldCommentId = from p in _context.Comments
-								   where (p.EventId == comments.EventId && p.UserId == comments.UserId)
-								   select p.CommentId;
-							*/
-
 				_context.Update(comments);
 
 				await _context.SaveChangesAsync();
@@ -130,35 +122,42 @@ namespace COP4710_V2.Controllers
 			return RedirectToAction("Index", new { id = comments.EventId });
 		}
 
+
+
         // GET: Comments/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var comments = await _context.Comments
-                .Include(c => c.Event)
-                .Include(c => c.User)
-                .FirstOrDefaultAsync(m => m.UserId == id);
-            if (comments == null)
-            {
-                return NotFound();
-            }
+			var CommentId = id;
 
-            return View(comments);
+			var comments = await _context.Comments
+									   	 .Include(c => c.Event)
+										 .Include(c => c.User)
+										 .FirstOrDefaultAsync(c => c.CommentId == id);
+
+			Events event_ = comments.Event;
+
+			ViewData["EventName"] = event_.EventName;
+			
+			return View(comments);
         }
 
         // POST: Comments/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var comments = await _context.Comments.FindAsync(id);
-            _context.Comments.Remove(comments);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+			var CommentId = id;
+
+			var comment = _context.Comments
+								  .Where(c => c.CommentId == CommentId);
+
+	//		var comments = await _context.Comments.FindAsync(id);
+            _context.Comments.Remove(await comment.FirstOrDefaultAsync());
+
+			await _context.SaveChangesAsync();
+			return RedirectToAction(nameof(Index),nameof(Events));
         }
 
 		// GET: Comments/Details/5
