@@ -24,9 +24,9 @@ namespace COP4710_V2.Controllers
 		// Default will be the Universities RSO
         public async Task<IActionResult> Index(String id)
         {
-			var Filter = id;
+			var Filter = "STRING FROM DROP DOWN";
 
-			var UserId = getCurrentUser().Id;
+			var UserId = GetCurrentUser().Id;
 
 			// Context with ALL Rso Models
 			var AllRsoContext = _context.Rso
@@ -45,7 +45,9 @@ namespace COP4710_V2.Controllers
 												 .FirstAsync();
 
 			// String Containing Users University ID
-			var UsersUniversityID = UniversityContext.UniversityId;
+			String UsersUniversityID = UniversityContext.UniversityId;
+
+			ViewData["UniName"] = UsersUniversityID.FirstOrDefault();
 
 			// Context Containing All RSO where the Rso is at Users University
 			// References Context AllRsoContext created above containing Relationships
@@ -56,16 +58,19 @@ namespace COP4710_V2.Controllers
 											 .Where(r => r.StudentId == UserId);
 
 			// If user Selected Filter University Pass UniversityOnlyRsoContext to 
-
-			if (Filter == "University")
+/////////////////////////////            ADD DROP DOWN FOR FILTER TYPE /////////////////////////////////
+			if ( (Filter.Equals("RSO") ) )
 			{
-				return View(await UniversityOnlyRsoContext.ToListAsync()); 
+				return View(); 
 			}
 
+			else if ((Filter.Equals("Pending")))
+			{
+				return View();
+			}
 
-
-			// If no filters set look at al
-			return View(await AllRsoContext.ToListAsync());
+			// If nothing return Just RSO's at users university
+			return View(await UniversityOnlyRsoContext.ToListAsync());
         }
 
 
@@ -74,7 +79,7 @@ namespace COP4710_V2.Controllers
         {
 			var userEmail = User.Identity.Name;
 			//gets the Current Users ID
-			var userId = getCurrentUser().Id;
+			var userId = GetCurrentUser().Id;
 
 			//Gets the Current Users University
 			var userUniversity = _context.UserUniversity
@@ -97,10 +102,10 @@ namespace COP4710_V2.Controllers
             if (ModelState.IsValid)
             {
 				rso.IsPending = true;
-				// Add Have to remove AdminID As RsoAdmin References Admins
+				// Have to remove RsoAdminId As RsoAdmin References Admins
 				// The user is not put into admin table until their Rso is
 				// NOT PENDING. Creator ID is saved into the PendingRso Table
-				// WHen Switching from Pending--> Not Pending RSO CreatorID must first
+				// WHen Switching from Pending --> Not Pending RSO CreatorID must first
 				// be added to admins Table (WITH EMAIL)
 
 				rso.RsoAdminId = null;
@@ -113,7 +118,8 @@ namespace COP4710_V2.Controllers
 				PRso.PendingRsoName = rso.Name;
 				PRso.PendingRsoId = rso.RsoId;
 				PRso.PendingNumMem = rso.NumMembers;
-				PRso.PendingRsoCreator = getCurrentUser();
+				PRso.PendingRsoCreatorId = GetCurrentUser().Id;
+				PRso.PendingRsoCreator = GetCurrentUser();
 				PRso.PendingRsoUniversityId = rso.RsoUniversityId;
 
 
@@ -125,13 +131,16 @@ namespace COP4710_V2.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-			return RedirectToAction(nameof(Index));
+			return RedirectToAction(nameof(Index), "University");
         }
+
 
 		public async Task<IActionResult> JoinRsoConfirm(int id)
 		{
+
+			// Get RsoId and UserId
 			var RsoId = id;
-			var currentUser = getCurrentUser().Id;
+			var currentUser = GetCurrentUser().Id;
 
 			//Create new StudentsInRsos Model
 			StudentsInRsos newRsoMember = new StudentsInRsos();
@@ -152,7 +161,7 @@ namespace COP4710_V2.Controllers
 			var RsoId = id;
 
 			//Grab Selected Rso with Corresponding Admin and University
-			var RsoContext = await _context.Rso.Where(r => r.RsoId ==id)
+			var RsoContext = await _context.Rso.Where(r => r.RsoId == id)
 												.Include(r => r.RsoAdmin)
 												.Include(r => r.RsoUniversity)
 												.FirstAsync();
@@ -251,7 +260,7 @@ namespace COP4710_V2.Controllers
             return _context.Rso.Any(e => e.RsoId == id);
         }
 
-		private AspNetUsers getCurrentUser()
+		private AspNetUsers GetCurrentUser()
 		{
 			return _context.AspNetUsers
 						   .Where(b => b.Email == User.Identity.Name)
