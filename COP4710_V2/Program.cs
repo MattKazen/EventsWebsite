@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 namespace COP4710_V2
 {
     public class Program
+
     {
         public static void Main(string[] args)
         {

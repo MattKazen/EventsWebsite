@@ -3,14 +3,11 @@
         ViewData["Title"] = "Start";
     }
 
-    <h2>Start</h2>
-    <p>User is @ViewBag.user.Email</p>
-    <p> Uni is @ViewBag.uni.UniName</p>
+    <h1>@ViewBag.uni</h1>
+    <p>User is @ViewBag.parsed</p>
 
-    @foreach (var item in Model)
-    {
-        <p>@item.Name</p>
-    }
+
+<h2>Welcome Back</h2>
 
     
 

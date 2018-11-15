@@ -72,7 +72,8 @@
 					@Html.DisplayFor(modelItem => item.Location.LocationId)
 				</td>
 				<td>
-					<a asp-controller="Events" asp-action="EventsApprove" asp-route-id="@item.EventId">Approve Event!</a>
+					<a asp-controller="Events" asp-action="EventsApprove"
+									 asp-route-id="@item.EventId">Approve Event!</a>
 				</td>
 			</tr>}
 	</tbody>

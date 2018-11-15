@@ -37,7 +37,7 @@
 						if(User.Identity.IsAuthenticated)
 						{
 							<li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-							<li><a asp-area="" asp-controller="Admins" asp-action="TestDisplay" asp-route-id="@User.Identity.Name">AdminsPullTest</a></li>
+							<li><a asp-area="" asp-controller="UserUniversities" asp-action="Index">Students List</a></li>
 							<li><a asp-area="" asp-controller="Events" asp-action="Index">Events</a></li>
 							<li><a asp-area="" asp-controller="Universities" asp-action="Index">View Universities</a></li>
 							<li><a asp-area="" asp-controller="Rsoes" asp-action="Index" asp-route-id="University">Rso</a></li>

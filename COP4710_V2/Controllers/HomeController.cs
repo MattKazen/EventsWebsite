@@ -133,8 +133,10 @@ namespace COP4710_V2.Controllers
             //Rso rso = _context.Rso.FromSql("EXECUTE findRsoByUni @UniId ='" + uni.UniEmail + "'").;
             var rso = _context.Rso.Where(x => x.RsoUniversityId == uni.UniName);
 
-            ViewBag.uni = uni;
-            ViewBag.user = user;
+			//String UserName = user.UserName.Substring(0, user.UserName.IndexOf("@"));
+
+			ViewBag.uni = uni.UniName;
+            ViewBag.user = user.UserName;
 
             return View(rso);
         }
