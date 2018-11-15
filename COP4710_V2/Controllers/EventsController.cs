@@ -82,15 +82,15 @@ namespace COP4710_V2.Controllers
         // POST: Events/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("EventId,LocationId,EventName,StartTime,StartDay," 
-										+"StartMonth,EventDesc,Category,ContactPhone,ContactEmail")]Events events)
+        public async Task<IActionResult> Create([Bind("EventId,LocationId,EventName,StartTime,StartDay,StartMonth,EventDesc,Category,ContactPhone,ContactEmail")]Events events)
         {
 			if (ModelState.IsValid)
             {
 
 				events.IsPending = true;
+				events.ContactEmail = User.Identity.Name;
 				//Add Created Event to Events Table
-				_context.Add(events);
+				await _context.AddAsync(events);
 
 				//If NonRSO Event --> Insert PendingEvent Model into Pending Events Table
 				//Approver remains null until SuperAdmin Approves
@@ -132,7 +132,7 @@ namespace COP4710_V2.Controllers
 				}
 				
 				//Save the Event into event table
-				_context.Add(events);
+				await _context.AddAsync(events);
 
 				await _context.SaveChangesAsync();
 
@@ -142,14 +142,14 @@ namespace COP4710_V2.Controllers
 											 where (bool)!b.IsPending
 											 select b;
 
-				return View("IndexForAdmins",  nonPendingEventContext);
+				return View("IndexForAdmins",  await nonPendingEventContext.ToListAsync());
 
 			}
 
 			ViewData["LocationId"] = new SelectList(_context.EventLocation, "LocationId", "LocationId", events.LocationId);
 
-			return RedirectToAction("Index", "Events", new { area = "" });
-        }
+			return RedirectToAction(nameof(Index));
+		}
 
         // GET: Events/Edit/5
         public async Task<IActionResult> Edit(int? id)

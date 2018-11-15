@@ -6,44 +6,50 @@
 
 <h2>Comments for Event @ViewBag.EventName</h2>
 
+
 <p>
 	<a asp-controller="Comments" asp-action="Create" asp-route-id="@ViewBag.EventId">Create New</a>
 </p>
 <table class="table">
-    <thead>
-        <tr>
+	<thead>
+		<tr>
 			<th>
 				Comment
 			</th>
-            <th>
-                @Html.DisplayNameFor(model => model.Rating) Stars
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Timestamp)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Text)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Rating)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Timestamp)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
-}
-    </tbody>
+			<th>
+				@Html.DisplayNameFor(model => model.Rating) Stars
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Timestamp)
+			</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model)
+		{
+		<tr>
+			<td>
+				@Html.DisplayFor(modelItem => item.Text)
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.Rating)
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.Timestamp)
+			</td>
+			<td>
+				@{
+					if(String.Equals(ViewBag.CurrentUserId,item.UserId))
+					{
+						<a asp-area="" asp-action="Edit" asp-route-id="@item.CommentId">Edit</a>
+
+					}
+				}
+			</td>
+		</tr>
+		}
+	</tbody>
 </table>
 
 <div>

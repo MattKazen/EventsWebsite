@@ -34,7 +34,7 @@
 			<div class="navbar-collapse collapse">
 				<ul class="nav navbar-nav">
 					@{
-						if (User.Identity.IsAuthenticated)
+						if(User.Identity.IsAuthenticated)
 						{
 							<li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
 							<li><a asp-area="" asp-controller="Admins" asp-action="TestDisplay" asp-route-id="@User.Identity.Name">AdminsPullTest</a></li>

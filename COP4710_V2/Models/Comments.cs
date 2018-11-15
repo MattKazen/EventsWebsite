@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace COP4710_V2.Models
 {
     public partial class Comments
     {
-        public int CommentId { get; set; }
+		[Key]
+		public int CommentId { get; set; }
         public int EventId { get; set; }
         public string UserId { get; set; }
         public string Text { get; set; }

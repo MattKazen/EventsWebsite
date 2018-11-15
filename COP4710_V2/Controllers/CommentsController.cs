@@ -22,10 +22,12 @@ namespace COP4710_V2.Controllers
         // GET: Comments
         public async Task<IActionResult> Index(int Id)
         {
-
 			var SelectedEventId = Id;
 
-			// Grab all comments for chosen Event
+			//gets the Current User
+			var CurrentUser = GetCurrentUser();
+
+			// Grab all comments for chosen Event 
 			var EventCommentContext = _context.Comments
 							     			  .Where(b => b.EventId == SelectedEventId);
 			
@@ -34,13 +36,12 @@ namespace COP4710_V2.Controllers
 											 .Where(b => b.EventId == SelectedEventId)
 											 .FirstOrDefaultAsync();
 
-			//Pass View Name of Event
+			ViewData["CurrentUserId"] = CurrentUser.Id;
 			ViewData["EventName"] = EventContext.EventName;
 			ViewData["EventId"] = SelectedEventId;
 
 			return View(await EventCommentContext.ToListAsync());
         }
-
 
         // GET: Comments/Create
         public IActionResult Create(int id)
@@ -58,8 +59,6 @@ namespace COP4710_V2.Controllers
 			return View();
         }
 
-
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
@@ -71,7 +70,7 @@ namespace COP4710_V2.Controllers
 									.Where(b=> b.Email == User.Identity.Name)
 									.FirstOrDefault()
 									.Id;
-			//TimeStamp
+			//TimeStamp  
 			DateTime Time = DateTime.Now;
 	
 			if (ModelState.IsValid)
@@ -87,57 +86,49 @@ namespace COP4710_V2.Controllers
         }
 
         // GET: Comments/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
+			
+			
+			int EventCommentId = id;
 
-            var comments = await _context.Comments.FindAsync(id);
-            if (comments == null)
-            {
-                return NotFound();
-            }
-            ViewData["EventId"] = new SelectList(_context.Events, "EventId", "EventId", comments.EventId);
-            ViewData["UserId"] = new SelectList(_context.AspNetUsers, "Id", "Id", comments.UserId);
-            return View(comments);
+			var EditCommentContext = _context.Comments.Where(c => c.CommentId == EventCommentId);
+
+           
+			
+
+
+            return View(EditCommentContext.FirstOrDefault());
         }
 
      
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("CommentId,EventId,UserId,Text,Rating,Timestamp")] Comments comments)
+        public async Task<IActionResult> Edit(string id, [Bind("EventId,UserId,Text,Rating,Timestamp")] Comments comments)
         {
-            if (id != comments.UserId)
-            {
-                return NotFound();
-            }
-
+ 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(comments);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CommentsExists(comments.UserId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+
+				comments.Timestamp = DateTime.Now;
+
+			/*	var OldCommentId = from p in _context.Comments
+								   where (p.EventId == comments.EventId && p.UserId == comments.UserId)
+								   select p.CommentId;
+							*/
+
+				_context.Update(comments);
+
+				await _context.SaveChangesAsync();
+                
             }
-            ViewData["EventId"] = new SelectList(_context.Events, "EventId", "EventId", comments.EventId);
-            ViewData["UserId"] = new SelectList(_context.AspNetUsers, "Id", "Id", comments.UserId);
-            return View(comments);
-        }
+
+			return RedirectToAction("Index", new { id = comments.EventId });
+		}
 
         // GET: Comments/Delete/5
         public async Task<IActionResult> Delete(string id)
@@ -189,7 +180,12 @@ namespace COP4710_V2.Controllers
 
 			return View(comments);
 		}
-
+		private AspNetUsers GetCurrentUser()
+		{
+			return _context.AspNetUsers
+						   .Where(b => b.Email == User.Identity.Name)
+						   .FirstOrDefault();
+		}
 		private bool CommentsExists(string id)
         {
             return _context.Comments.Any(e => e.UserId == id);
