@@ -4,10 +4,13 @@
     ViewData["Title"] = "Index";
 }
 
-<h2>RSO's at @ViewBag.UniversityName </h2>
+<h2>RSO's at @ViewBag.UniName </h2>
 
 <p>
     <a asp-action="Create">Start your own! (Minimum 5 members)</a>
+</p>
+<p>
+	<a asp-action="PendingRsoIndex">View Pending Rsos</a> |
 </p>
 
 
@@ -17,7 +20,6 @@
 			<th>
 				@Html.DisplayNameFor(model => model.RsoId)
 			</th>
-			
 			<th>
 				@Html.DisplayNameFor(model => model.Name)
 			</th>
@@ -55,7 +57,6 @@
 			</td>
 			<td>
 				<a asp-action="JoinRso" asp-route-id="@item.RsoId">Join Rso</a>
-
 				<a asp-action="Edit" asp-route-id="@item.RsoId">Edit</a> |
 				<a asp-action="Details" asp-route-id="@item.RsoId">Details</a> |
 				<a asp-action="Delete" asp-route-id="@item.RsoId">Delete</a>

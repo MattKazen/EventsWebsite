@@ -22,9 +22,44 @@ namespace COP4710_V2.Controllers
         // GET: Rsoes
 		// Id refers to Which set of RSO's the users want to view
 		// Default will be the Universities RSO
-        public async Task<IActionResult> Index(String id)
+        public async Task<IActionResult> Index()
         {
 			var Filter = "STRING FROM DROP DOWN";
+
+			var UserId = GetCurrentUser().Id;
+
+			// Context Containing Users University Model
+			var UniversityContext = await _context.UserUniversity
+												 .Where(x => x.StudentId == UserId)
+												 .FirstAsync();
+
+			// String Containing Users University ID
+			var UsersUniversityID = UniversityContext.UniversityId;
+
+			// Context with ALL Rso at Users University that are not pending Models
+			var NonPendingUniRsoContext = _context.Rso
+										.Include(r => r.RsoUniversity)
+										.Include(r => r.RsoAdmin)
+										.Where(x => x.RsoUniversityId == UsersUniversityID)
+										.Where(x => x.NumMembers >= 5); 
+
+			ViewData["UniName"] = UsersUniversityID;
+
+			// Context Containing All RSO where the Rso is at Users University
+			// References Context AllRsoContext created above containing Relationships
+		//	var UniversityOnlyRsoContext = AllRsoContext.Where(x => x.RsoUniversityId == UsersUniversityID);
+
+		//	var MemberOfRsoContext = _context.StudentsInRsos
+		//									 .Where(r => r.StudentId == UserId);
+
+
+			// If nothing return Just RSO's at users university
+			return View(await NonPendingUniRsoContext.ToListAsync());
+        }
+
+
+		public async Task<IActionResult> PendingRsoIndex()
+		{
 
 			var UserId = GetCurrentUser().Id;
 
@@ -34,10 +69,8 @@ namespace COP4710_V2.Controllers
 										.Include(r => r.RsoAdmin);
 
 			// Context with ALL PendingRSO Models
-			var AllPendingRsoContext = _context.PendingRso
-												.Include(r => r.PendingRsoUniversity)
-												.Include(r => r.PendingRsoCreator);
-
+			var AllPendingRsoContext = AllRsoContext.Where(x => x.IsPending == true);
+													
 
 			// Context Containing Users University Model
 			var UniversityContext = await _context.UserUniversity
@@ -45,37 +78,21 @@ namespace COP4710_V2.Controllers
 												 .FirstAsync();
 
 			// String Containing Users University ID
-			String UsersUniversityID = UniversityContext.UniversityId;
+			var UsersUniversityID = UniversityContext.UniversityId;
 
-			ViewData["UniName"] = UsersUniversityID.FirstOrDefault();
+			ViewData["UniName"] = UsersUniversityID;
 
 			// Context Containing All RSO where the Rso is at Users University
 			// References Context AllRsoContext created above containing Relationships
+			var UniandPendingOnlyRsoContext = AllPendingRsoContext
+											.Where(x => x.RsoUniversityId == UsersUniversityID);
 
-			var UniversityOnlyRsoContext = AllRsoContext.Where(x => x.RsoUniversityId == UsersUniversityID);
-
-			var MemberOfRsoContext = _context.StudentsInRsos
-											 .Where(r => r.StudentId == UserId);
-
-			// If user Selected Filter University Pass UniversityOnlyRsoContext to 
-/////////////////////////////            ADD DROP DOWN FOR FILTER TYPE /////////////////////////////////
-			if ( (Filter.Equals("RSO") ) )
-			{
-				return View(); 
-			}
-
-			else if ((Filter.Equals("Pending")))
-			{
-				return View();
-			}
-
-			// If nothing return Just RSO's at users university
-			return View(await UniversityOnlyRsoContext.ToListAsync());
-        }
+			return View(await UniandPendingOnlyRsoContext.ToListAsync());
+		}
 
 
-        // GET: Rsoes/Create
-        public IActionResult Create()
+		// GET: Rsoes/Create
+		public IActionResult Create()
         {
 			var userEmail = User.Identity.Name;
 			//gets the Current Users ID

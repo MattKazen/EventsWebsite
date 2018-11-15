@@ -4,14 +4,15 @@
 	ViewData["Title"] = "Index";
 }
 
-<h2>All RSO's for Your University</h2>
+<h2>Pending RSO's at @ViewBag.UniName </h2>
 
-<p>
-	<a asp-action="Create">Start your own! (Minimum 5 members)</a>
-</p>
+
 <table class="table">
 	<thead>
 		<tr>
+			<th>
+				@Html.DisplayNameFor(model => model.RsoId)
+			</th>
 			<th>
 				@Html.DisplayNameFor(model => model.Name)
 			</th>
@@ -33,6 +34,9 @@
 		{
 			<tr>
 				<td>
+					@Html.DisplayFor(modelItem => item.RsoId)
+				</td>
+				<td>
 					@Html.DisplayFor(modelItem => item.Name)
 				</td>
 				<td>
@@ -44,7 +48,10 @@
 				<td>
 					@Html.DisplayFor(modelItem => item.NumMembers)
 				</td>
+				<td>
+					<a asp-action="JoinRso" asp-route-id="@item.RsoId">Join Rso</a>
 
+				</td>
 			</tr>
 		}
 	</tbody>
