@@ -24,8 +24,6 @@ namespace COP4710_V2.Controllers
 		// Default will be the Universities RSO
         public async Task<IActionResult> Index()
         {
-			var Filter = "STRING FROM DROP DOWN";
-
 			var UserId = GetCurrentUser().Id;
 
 			// Context Containing Users University Model
@@ -37,20 +35,15 @@ namespace COP4710_V2.Controllers
 			var UsersUniversityID = UniversityContext.UniversityId;
 
 			// Context with ALL Rso at Users University that are not pending Models
+
 			var NonPendingUniRsoContext = _context.Rso
-													.Include(r => r.RsoUniversity)
-													.Include(r => r.RsoAdmin)
-														.Where(x => x.RsoUniversityId == UsersUniversityID)
-														.Where(x => x.NumMembers >= 5); 
+											.Include(r => r.RsoUniversity)
+											.Include(r => r.RsoAdmin)
+												.Where(r => r.IsPending == false)
+												.Where(r => r.RsoUniversityId == UsersUniversityID);
+										
 
 			ViewData["UniName"] = UsersUniversityID;
-
-			// Context Containing All RSO where the Rso is at Users University
-			// References Context AllRsoContext created above containing Relationships
-		//	var UniversityOnlyRsoContext = AllRsoContext.Where(x => x.RsoUniversityId == UsersUniversityID);
-
-		//	var MemberOfRsoContext = _context.StudentsInRsos
-		//									 .Where(r => r.StudentId == UserId);
 
 
 			// If nothing return Just RSO's at users university
@@ -63,15 +56,6 @@ namespace COP4710_V2.Controllers
 
 			var UserId = GetCurrentUser().Id;
 
-			// Context with ALL Rso Models
-			var AllRsoContext = _context.Rso
-										.Include(r => r.RsoUniversity)
-										.Include(r => r.RsoAdmin);
-
-			// Context with ALL PendingRSO Models
-			var AllPendingRsoContext = AllRsoContext.Where(x => x.IsPending == true);
-													
-
 			// Context Containing Users University Model
 			var UniversityContext = await _context.UserUniversity
 												 .Where(x => x.StudentId == UserId)
@@ -80,14 +64,51 @@ namespace COP4710_V2.Controllers
 			// String Containing Users University ID
 			var UsersUniversityID = UniversityContext.UniversityId;
 
+			// Pending RSO's At the Users University also in the PendingRsoTable
+			var UniversityPendingRsoContext = _context.Rso
+												.Include(r => r.PendingRso)
+													.ThenInclude(r => r.PendingRsoCreator)
+												.Include(r => r.RsoUniversity)
+													.Where(r => r.IsPending == true)
+													.Where(r => r.RsoUniversityId == UsersUniversityID)
+													.Where(r => r.PendingRso.PendingRsoId == r.RsoId);
+						
+
+
+
+
 			ViewData["UniName"] = UsersUniversityID;
 
-			// Context Containing All RSO where the Rso is at Users University
-			// References Context AllRsoContext created above containing Relationships
-			var UniandPendingOnlyRsoContext = AllPendingRsoContext
-											.Where(x => x.RsoUniversityId == UsersUniversityID);
+			return View(await UniversityPendingRsoContext.ToListAsync());
+		}
 
-			return View(await UniandPendingOnlyRsoContext.ToListAsync());
+
+		public async Task<IActionResult> MemberOfRsoIndex()
+		{
+
+			var UserId = GetCurrentUser().Id;
+
+
+			// Pending RSO's At the Users University also in the PendingRsoTable
+			var UsersRsosContext = _context.Rso
+											.Include(r => r.StudentsInRsos)
+												.ThenInclude(r => r.MemberofRso)
+											.Include(r => r.RsoUniversity)
+												.Where(r => r.IsPending == true)
+												;
+
+
+			var nonPendingRsoContext = from r in _context.Rso
+										 from m in _context.StudentsInRsos
+										 where r.RsoId == m.MemberofRso
+										 where m.StudentId == UserId
+										 select r;
+
+//			ViewData["UniName"] = UsersUniversityID;
+
+
+
+			return View(await nonPendingRsoContext.ToListAsync());
 		}
 
 

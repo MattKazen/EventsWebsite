@@ -1,25 +1,28 @@
 ﻿@model IEnumerable<COP4710_V2.Models.Rso>
 
 @{
-    ViewData["Title"] = "Index";
+	ViewData["Title"] = "Index";
 }
 
 <h2>RSO's at @ViewBag.UniName </h2>
 
 <p>
-    <a asp-action="Create">Start your own! (Minimum 5 members)</a>
+	<a asp-action="Create">Start your own! (Minimum 5 members)</a>
 </p>
+<br />
+
 <p>
 	<a asp-action="PendingRsoIndex">View Pending Rsos</a> |
 </p>
-
+<br />
+<p>
+	<a asp-action="MemberOfRsoIndex">View Your RSOs</a> |
+</p>
+<br />
 
 <table class="table">
-    <thead>
+	<thead>
 		<tr>
-			<th>
-				@Html.DisplayNameFor(model => model.RsoId)
-			</th>
 			<th>
 				@Html.DisplayNameFor(model => model.Name)
 			</th>
@@ -34,33 +37,30 @@
 			</th>
 			<th></th>
 		</tr>
-    </thead>
-    <tbody>
+	</thead>
+	<tbody>
 
-@foreach (var item in Model)
-{
-		<tr>
-			<td>
-				@Html.DisplayFor(modelItem => item.RsoId)
-			</td>
-			<td>
-				@Html.DisplayFor(modelItem => item.Name)
-			</td>
-			<td>
-				@Html.DisplayFor(modelItem => item.RsoAdmin.AdminEmail)
-			</td>
-			<td>
-				@Html.DisplayFor(modelItem => item.RsoUniversity.UniName)
-			</td>
-			<td>
-				@Html.DisplayFor(modelItem => item.NumMembers)
-			</td>
-			<td>
-				<a asp-action="JoinRso" asp-route-id="@item.RsoId">Join Rso</a>
-	
-			</td>
+		@foreach (var item in Model)
+		{
+			<tr>
+				<td>
+					@Html.DisplayFor(modelItem => item.Name)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.RsoAdmin.AdminEmail)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.RsoUniversity.UniName)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.NumMembers)
+				</td>
+				<td>
+					<a asp-action="JoinRso" asp-route-id="@item.RsoId">Join Rso</a>
 
-		</tr>
-}
-    </tbody>
+				</td>
+
+			</tr>
+		}
+	</tbody>
 </table>

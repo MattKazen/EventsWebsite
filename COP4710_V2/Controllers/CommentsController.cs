@@ -85,21 +85,25 @@ namespace COP4710_V2.Controllers
 			return RedirectToAction("Index", new { id = comments.EventId }); 
         }
 
-        // GET: Comments/Edit/5
-        public async Task<IActionResult> Edit(int id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-			
-			
+		// GET: Comments/Edit/5
+		public async Task<IActionResult> Edit(int id)
+		{
+
 			int EventCommentId = id;
 
-			var EditCommentContext = 
-					_context.Comments.Where(c => c.CommentId == EventCommentId);
+			var comments = await _context.Comments
+											.Include(c => c.Event)
+										    .Include(c => c.User)
+										    .FirstOrDefaultAsync(c => c.CommentId == id);
 
-            return View(EditCommentContext.FirstOrDefault());
+			Events events = comments.Event;
+
+			ViewData["EventName"] = events.EventName;
+			ViewData["Commenter"] = User.Identity.Name;
+
+			
+
+            return View(comments);
         }
 
      
