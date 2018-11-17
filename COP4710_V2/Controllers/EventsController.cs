@@ -29,14 +29,14 @@ namespace COP4710_V2.Controllers
 			var eventContext =_context.Events.Include(e => e.Location);
 
 			//Selects all nonPendingEvents
-			var nonPendingEventContext = from b in eventContext
+			var nonPendingEventContext = (from b in eventContext
 										 where (bool) !b.IsPending
-										 select b;
+										 select b).Include(b => b.Location);
 			
 			// Selects All Pending Events from Events Table
-			var PendingEventContext =    from b in eventContext
+			var PendingEventContext =    (from b in eventContext
 										 where (bool)b.IsPending
-										 select b;
+										 select b).Include(b=> b.Location);
 
 			ViewBag.NonPendingEvents= await nonPendingEventContext.ToListAsync();
 
@@ -84,9 +84,15 @@ namespace COP4710_V2.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("EventId,LocationId,EventName,StartTime,StartDay,StartMonth,EventDesc,Category,ContactPhone,ContactEmail")]Events events)
         {
+
+			if (CheckIfEventIsTimeRestricted(events))
+			{
+				ViewBag.ErrorMessage = "Sorry there is currently an event scheduled at that location during that time";
+				return View("CustomErrorViewMessage");
+			}
+
 			if (ModelState.IsValid)
             {
-
 				events.IsPending = true;
 				events.ContactEmail = User.Identity.Name;
 				//Add Created Event to Events Table
@@ -151,8 +157,24 @@ namespace COP4710_V2.Controllers
 			return RedirectToAction(nameof(Index));
 		}
 
-        // GET: Events/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+		private Boolean CheckIfEventIsTimeRestricted(Events events)
+		{
+			int? Time = events.StartTime;
+			int? Day = events.StartDay;
+			int? Month = events.StartMonth;
+			int? Location = events.LocationId;
+
+		
+			return _context.Events
+								.Where(x => x.StartMonth == Month)
+								.Where(x => x.StartDay == Day)
+								.Where(x => x.StartTime == Time)
+								.Where(x => x.LocationId == Location).Any();
+	
+								}
+
+		// GET: Events/Edit/5
+		public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {

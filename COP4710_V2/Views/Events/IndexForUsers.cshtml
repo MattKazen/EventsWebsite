@@ -69,7 +69,7 @@
 					@Html.DisplayFor(modelItem => item.ContactEmail)
 				</td>
 				<td>
-					@Html.DisplayFor(modelItem => item.Location.LocationId)
+					@Html.DisplayFor(modelItem => item.Location.LocationName)
 				</td>
 				<td>
 					<a asp-area="" asp-controller="Comments" asp-action="Index" asp-route-id="@item.EventId">View Comments</a>
