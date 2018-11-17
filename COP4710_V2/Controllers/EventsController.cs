@@ -65,8 +65,8 @@ namespace COP4710_V2.Controllers
 			String userEmail = User.Identity.Name;
 
 			var currentUser = _context.AspNetUsers
-					.Where(b => b.Email == userEmail)
-					.FirstOrDefault();
+										.Where(b => b.Email == userEmail)
+										.FirstOrDefault();
 
 			//Preloads Users Email and Phone in contact info
 			ViewData["UserEmail"] = userEmail;
@@ -93,6 +93,9 @@ namespace COP4710_V2.Controllers
 
 			if (ModelState.IsValid)
             {
+				//Grabs the users Selected Event Type (pub/priv/RSO)
+				String EventType = Request.Form["EventType"].ToString();
+
 				events.IsPending = true;
 				events.ContactEmail = User.Identity.Name;
 				//Add Created Event to Events Table
@@ -105,8 +108,7 @@ namespace COP4710_V2.Controllers
 				newPendingEvent.CreatorId = getUserID();
 				newPendingEvent.ApproverId = null;
 
-				//Grabs the users Selected Event Type (pub/priv/RSO)
-				String EventType = Request.Form["EventType"].ToString();
+
 
 				if (EventType == "Public Event")
 				{
@@ -127,15 +129,7 @@ namespace COP4710_V2.Controllers
 					_context.Add(newPendingEvent);
 					_context.Add(newPrivEvent);
 				}
-				//RSO Event --> Automatically created
-				//Need to check for User's RSO affiliation and add to RsoEventsTable
-				else if(EventType == "RSO Event")
-				{
-					RsoEvents EventRSO = new RsoEvents();
-					EventRSO.RsoEventId = events.EventId;
 
-					_context.Add(EventRSO);
-				}
 				
 				//Save the Event into event table
 				await _context.AddAsync(events);
@@ -149,6 +143,77 @@ namespace COP4710_V2.Controllers
 											 select b;
 
 				return View("IndexForAdmins",  await nonPendingEventContext.ToListAsync());
+
+			}
+
+			ViewData["LocationId"] = new SelectList(_context.EventLocation, "LocationId", "LocationId", events.LocationId);
+
+			return RedirectToAction(nameof(Index));
+		}
+
+		public IActionResult CreateRsoEvent()
+		{
+
+			String userEmail = User.Identity.Name;
+
+			var currentUser = _context.AspNetUsers
+										.Include(r => r.Admins)
+										.Where(b => b.Email == userEmail)
+										.FirstOrDefault();
+
+			var RsoCurrentUserIsAdmin = _context.Rso
+												.Where(r => r.RsoAdmin.AdminEmail == userEmail)
+													.ToList();
+
+			//Preloads Users Email and Phone in contact info
+			ViewData["AdminsRsos"] = RsoCurrentUserIsAdmin;
+			ViewData["UserEmail"] = currentUser.UserName;
+			ViewData["UserPhone"] = currentUser.PhoneNumber;
+
+			//Grabs list of Possible Locations to put the Event at
+			ViewData["LocationId"] = new SelectList(_context.EventLocation, "LocationId", "LocationName");
+
+			return View();
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> CreateRsoEvent([Bind("EventId,LocationId,EventName,StartTime,StartDay,StartMonth,EventDesc,Category,ContactPhone,ContactEmail")]Events events)
+		{
+
+			if (CheckIfEventIsTimeRestricted(events))
+			{
+				ViewBag.ErrorMessage = "Sorry there is currently an event scheduled at that location during that time";
+				return View("CustomErrorViewMessage");
+			}
+
+			if (ModelState.IsValid)
+			{
+				//Grabs the users Selected Event Type (pub/priv/RSO)
+				int RsoId = int.Parse(Request.Form["RsoId"]);
+				
+				//Need to add Event to Events Table before able to add RsoEvent
+				await _context.AddAsync(events);
+				await _context.SaveChangesAsync();
+
+				events.ContactEmail = User.Identity.Name;
+
+				RsoEvents NewRsoEvent = new RsoEvents();
+				NewRsoEvent.Rso = RsoId;
+				NewRsoEvent.RsoEventId = events.EventId;
+				
+
+				await _context.AddAsync(NewRsoEvent);
+
+				await _context.SaveChangesAsync();
+
+				//Selects all nonPendingEvents
+				//QUERY CAN BE PUT AS STORED PR
+				var nonPendingEventContext = from b in _context.Events
+											 where (bool)!b.IsPending
+											 select b;
+
+				return View("IndexForAdmins", await nonPendingEventContext.ToListAsync());
 
 			}
 
@@ -171,7 +236,9 @@ namespace COP4710_V2.Controllers
 								.Where(x => x.StartTime == Time)
 								.Where(x => x.LocationId == Location).Any();
 	
-								}
+		}
+
+
 
 		// GET: Events/Edit/5
 		public async Task<IActionResult> Edit(int? id)
