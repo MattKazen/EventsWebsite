@@ -34,20 +34,27 @@ namespace COP4710_V2.Controllers
 			// String Containing Users University ID
 			var UsersUniversityID = UniversityContext.UniversityId;
 
-			// Context with ALL Rso at Users University that are not pending Models
 
-			var NonPendingUniRsoContext = _context.Rso
-											.Include(r => r.RsoUniversity)
+			var JoinableNonPendingRSO = (from r in _context.Rso
+											where r.RsoUniversityId == UsersUniversityID
+											where r.IsPending == false
+											where !(
+												from  s in _context.StudentsInRsos
+													where s.StudentId == UserId
+	 													select s.MemberofRso).Contains(r.RsoId)
+											select r)
 											.Include(r => r.RsoAdmin)
-												.Where(r => r.IsPending == false)
-												.Where(r => r.RsoUniversityId == UsersUniversityID);
-										
+											.Include(r => r.RsoUniversity)
+											.Include(r => r.PendingRso)
+												.ThenInclude(r =>r.PendingRsoCreator)
+										.Distinct();
 
+	
 			ViewData["UniName"] = UsersUniversityID;
 
 
 			// If nothing return Just RSO's at users university
-			return View(await NonPendingUniRsoContext.ToListAsync());
+			return View(await JoinableNonPendingRSO.ToListAsync());
         }
 
 
@@ -64,22 +71,24 @@ namespace COP4710_V2.Controllers
 			// String Containing Users University ID
 			var UsersUniversityID = UniversityContext.UniversityId;
 
-			// Pending RSO's At the Users University also in the PendingRsoTable
-			var UniversityPendingRsoContext = _context.Rso
-												.Include(r => r.PendingRso)
-													.ThenInclude(r => r.PendingRsoCreator)
-												.Include(r => r.RsoUniversity)
-													.Where(r => r.IsPending == true)
-													.Where(r => r.RsoUniversityId == UsersUniversityID)
-													.Where(r => r.PendingRso.PendingRsoId == r.RsoId);
-						
-
-
+			var JoinablePendingRSO = (from r in _context.Rso
+										 where r.RsoUniversityId == UsersUniversityID
+										 where r.IsPending == true
+										 where !(
+											 from s in _context.StudentsInRsos
+											 where s.StudentId == UserId
+											 select s.MemberofRso).Contains(r.RsoId)
+										 select r)
+										.Include(r => r.RsoAdmin)
+										.Include(r => r.RsoUniversity)
+										.Include(r => r.PendingRso)
+											.ThenInclude(r => r.PendingRsoCreator)
+									.Distinct();
 
 
 			ViewData["UniName"] = UsersUniversityID;
 
-			return View(await UniversityPendingRsoContext.ToListAsync());
+			return View(await JoinablePendingRSO.ToListAsync());
 		}
 
 
@@ -88,27 +97,16 @@ namespace COP4710_V2.Controllers
 
 			var UserId = GetCurrentUser().Id;
 
-
-			// Pending RSO's At the Users University also in the PendingRsoTable
-			var UsersRsosContext = _context.Rso
-											.Include(r => r.StudentsInRsos)
-												.ThenInclude(r => r.MemberofRso)
-											.Include(r => r.RsoUniversity)
-												.Where(r => r.IsPending == true)
-												;
-
-
-			var nonPendingRsoContext = from r in _context.Rso
-										 from m in _context.StudentsInRsos
-										 where r.RsoId == m.MemberofRso
-										 where m.StudentId == UserId
-										 select r;
-
-//			ViewData["UniName"] = UsersUniversityID;
+			var MemberOfRsoContext = (from r in _context.Rso
+									  from m in _context.StudentsInRsos
+										where r.RsoId == m.MemberofRso
+										where m.StudentId == UserId
+											select r)
+									.Include(r => r.RsoAdmin)
+									.Include(r=> r.RsoUniversity);
 
 
-
-			return View(await nonPendingRsoContext.ToListAsync());
+			return View(await MemberOfRsoContext.ToListAsync());
 		}
 
 
