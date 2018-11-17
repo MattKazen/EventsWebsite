@@ -186,7 +186,7 @@ namespace COP4710_V2.Models
 
                 entity.Property(e => e.Timestamp)
                     .HasColumnName("timestamp_")
-                    .HasColumnType("date");
+                    .HasColumnType("datetime");
 
                 entity.HasOne(d => d.Event)
                     .WithMany(p => p.Comments)
@@ -234,9 +234,9 @@ namespace COP4710_V2.Models
 
                 entity.Property(e => e.ContactPhone).HasMaxLength(20);
 
-                entity.Property(e => e.EventDesc).HasMaxLength(450);
+                entity.Property(e => e.EventDesc).HasMaxLength(50);
 
-                entity.Property(e => e.EventName).HasMaxLength(20);
+                entity.Property(e => e.EventName).HasMaxLength(30);
 
                 entity.Property(e => e.LocationId).HasColumnName("LocationID");
 

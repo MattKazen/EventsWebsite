@@ -72,6 +72,7 @@ namespace COP4710_V2.Controllers
 									.Id;
 			//TimeStamp  
 			DateTime Time = DateTime.Now;
+		//	Time.AddMinutes(Time)
 	
 			if (ModelState.IsValid)
             {
