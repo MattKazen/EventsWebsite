@@ -26,35 +26,96 @@ namespace COP4710_V2.Controllers
         public async Task<IActionResult> Index()
         {
 			//Grabs all events in Events Table
-			var eventContext =_context.Events.Include(e => e.Location);
-
-			//Selects all nonPendingEvents
-			var nonPendingEventContext = (from b in eventContext
-										 where (bool) !b.IsPending
-										 select b).Include(b => b.Location);
+			var eventContext =_context.Events;
 			
-			// Selects All Pending Events from Events Table
-			var PendingEventContext =    (from b in eventContext
-										 where (bool)b.IsPending
-										 select b).Include(b=> b.Location);
+			
+			//Delete once new code works
+			if (User.Identity.IsAuthenticated)
+			{
+				//Selects all nonPendingEvents
+				/*			var nonPendingEventContext = (from b in eventContext
+														 where (bool) !b.IsPending
+														 select b)
+															.Include(b => b.Location);
 
-			ViewBag.NonPendingEvents= await nonPendingEventContext.ToListAsync();
+							// Selects All Pending Events from Events Table
+							var PendingEventContext =    (from b in eventContext
+														 where (bool)b.IsPending
+														 select b)
+															.Include(b=> b.Location);
 
-			//If the user is an admin, direct them to view with Create Button
-			if (isUserAdmin())
-				return View("IndexForAdmins", await nonPendingEventContext.ToListAsync());
+				// Approved Public Event Context
+				var PublicEventcontext = (from e in eventContext
+										  from pe in pubEventContext
+											  where !(bool)e.IsPending
+											  where e.EventId == pe.PublicEventId
+												  select e)
+													.Include(e => e.Location);
 
+				// Approved Public Event Context
+				var PrivateEventcontext = (from e in eventContext
+										  from pe in PrivEventContext
+										  where !(bool)e.IsPending
+										  where e.EventId == pe.PublicEventId
+										  select e)
+													.Include(e => e.Location);
+				*/
 
-			//If the user is a super admin, grab all PendingEvents
+			}
+
+			//Split events into Pending and nonPending
 			if (isUserSuper())
 			{
+				//Grabs all NonPending Events
+				var NonPendingEventContext = eventContext
+												.Include(e => e.Location)
+												.Where(e => !((bool)e.IsPending));
+
+				ViewBag.NonPendingEvents = await NonPendingEventContext.ToListAsync();
+
+				//Grabs all Pending Events (Only Super Admin needs to see)
+				var PendingEventContext = eventContext
+												.Include(e => e.Location)
+												.Where(e => ((bool)e.IsPending));
+
 				return View("EventsApprove", await PendingEventContext.ToListAsync());
 			}
 
-			//If user is not admin or SuperAdmin, direct them to view without create button;	
+			//Split Events into Public and Private for Users and admins
 			else
-				return View("IndexForUsers", await eventContext.ToListAsync());
-        }
+			{
+				//Grabs all Approved Public Events
+				var PublicEventContext = eventContext
+												.Include(e => e.PubEvents)
+												.Include(e => e.Location)
+													.Where(e => !(bool)e.IsPending)
+													.Where(e => e.EventId == e.PubEvents.PublicEventId);
+
+				//Grabs all Approved Private Events
+				var PrivEventContext = eventContext
+												.Include(e => e.PrivEvents)
+												.Include(e => e.Location)
+													.Where(e => !(bool)e.IsPending)
+													.Where(e => e.EventId == e.PrivEvents.PrivateEventId);
+
+				// Save Private Events into Viewbag
+				ViewBag.PrivateEvents = await PrivEventContext.ToListAsync();
+				ViewBag.UserUniversityId = getUsersUniversityId();
+
+				// Pass Public Events to view and save Private Events into Viewbag
+				if (isUserAdmin())
+				{
+					return View("IndexForAdmins", await PublicEventContext.ToListAsync());
+				}
+
+
+				//If user is not admin or SuperAdmin, direct them to view without create button;	
+				else
+				{
+					return View("IndexForUsers", await PublicEventContext.ToListAsync());
+				}
+			}
+	}
 
 
         // GET: Events/Create
@@ -122,18 +183,19 @@ namespace COP4710_V2.Controllers
 
 				else if (EventType == "Private Event")
 				{
+					var usersUniversityId = getUsersUniversityId();
+
+					//Create New Private Event Model
 					PrivEvents newPrivEvent = new PrivEvents();
 					newPrivEvent.PrivateEventId = events.EventId;
+					newPrivEvent.EventUniversityId = usersUniversityId;
 
 					//Adds to Pending and private table
 					_context.Add(newPendingEvent);
 					_context.Add(newPrivEvent);
 				}
 
-				
-				//Save the Event into event table
-				await _context.AddAsync(events);
-
+			
 				await _context.SaveChangesAsync();
 
 				//Selects all nonPendingEvents
@@ -142,13 +204,20 @@ namespace COP4710_V2.Controllers
 											 where (bool)!b.IsPending
 											 select b;
 
-				return View("IndexForAdmins",  await nonPendingEventContext.ToListAsync());
+			//	return View("IndexForAdmins",  await nonPendingEventContext.ToListAsync());
 
 			}
 
 			ViewData["LocationId"] = new SelectList(_context.EventLocation, "LocationId", "LocationId", events.LocationId);
 
 			return RedirectToAction(nameof(Index));
+		}
+
+		private String getUsersUniversityId()
+		{
+			return _context.UserUniversity
+								.Where(u => u.StudentId == getUserID())
+								.Select(u => u.UniversityId).First();
 		}
 
 		public IActionResult CreateRsoEvent()
@@ -327,6 +396,9 @@ namespace COP4710_V2.Controllers
 		{
 
 			String email = User.Identity.Name;
+
+
+			//_context.AspNetUsers.Where(u => u.UserName == email).First().Id;
 
 			return _context.AspNetUsers.FromSql("emailtoID '" + email + "'").FirstOrDefault().Id;
 		}
