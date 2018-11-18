@@ -27,47 +27,16 @@ namespace COP4710_V2.Controllers
         {
 			//Grabs all events in Events Table
 			var eventContext =_context.Events;
+
+			var UniversityId = getUsersUniversityId();
 			
-			
-			//Delete once new code works
-			if (User.Identity.IsAuthenticated)
-			{
-				//Selects all nonPendingEvents
-				/*			var nonPendingEventContext = (from b in eventContext
-														 where (bool) !b.IsPending
-														 select b)
-															.Include(b => b.Location);
-
-							// Selects All Pending Events from Events Table
-							var PendingEventContext =    (from b in eventContext
-														 where (bool)b.IsPending
-														 select b)
-															.Include(b=> b.Location);
-
-				// Approved Public Event Context
-				var PublicEventcontext = (from e in eventContext
-										  from pe in pubEventContext
-											  where !(bool)e.IsPending
-											  where e.EventId == pe.PublicEventId
-												  select e)
-													.Include(e => e.Location);
-
-				// Approved Public Event Context
-				var PrivateEventcontext = (from e in eventContext
-										  from pe in PrivEventContext
-										  where !(bool)e.IsPending
-										  where e.EventId == pe.PublicEventId
-										  select e)
-													.Include(e => e.Location);
-				*/
-
-			}
 
 			//Split events into Pending and nonPending
 			if (isUserSuper())
 			{
 				//Grabs all NonPending Events
 				var NonPendingEventContext = eventContext
+												
 												.Include(e => e.Location)
 												.Where(e => !((bool)e.IsPending));
 
@@ -96,11 +65,12 @@ namespace COP4710_V2.Controllers
 												.Include(e => e.PrivEvents)
 												.Include(e => e.Location)
 													.Where(e => !(bool)e.IsPending)
-													.Where(e => e.EventId == e.PrivEvents.PrivateEventId);
+													.Where(e => e.EventId == e.PrivEvents.PrivateEventId)
+													.Where(e => e.PrivEvents.EventUniversityId == UniversityId);
 
 				// Save Private Events into Viewbag
 				ViewBag.PrivateEvents = await PrivEventContext.ToListAsync();
-				ViewBag.UserUniversityId = getUsersUniversityId();
+				ViewBag.UserUniversityId = UniversityId;
 
 				// Pass Public Events to view and save Private Events into Viewbag
 				if (isUserAdmin())
