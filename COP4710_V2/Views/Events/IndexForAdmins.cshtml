@@ -1,86 +1,92 @@
 ﻿@model IEnumerable<COP4710_V2.Models.Events>
 
 @{
-    ViewData["Title"] = "List of Events";
+	ViewData["Title"] = "List of Events";
 }
 
 <h2>List of Events</h2>
 
+
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>
+				@Html.DisplayNameFor(model => model.EventName)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.StartTime)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.StartDay)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.StartMonth)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.EventDesc)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Category)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.ContactPhone)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.ContactEmail)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Location)
+			</th>
+			<th></th>
+		</tr>
+	</thead>
+
+	<tbody>
+		@foreach (var item in Model)
+		{
+			<tr>
+				<td>
+					@Html.DisplayFor(modelItem => item.EventName)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.StartTime)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.StartDay)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.StartMonth)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.EventDesc)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Category)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.ContactPhone)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.ContactEmail)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Location.LocationName)
+				</td>
+				<td>
+					<a asp-area="" asp-controller="Comments" asp-action="Index" asp-route-id="@item.EventId">View Comments</a>
+				</td>
+			</tr>
+		}
+	</tbody>
+
+
+</table>
+
 <p>
-    <a asp-action="Create">Create New Public or Private Event</a>
+	<a asp-action="Create">Create New Public or Private Event</a>
 </p>
 
 <p>
 	<a asp-action="CreateRsoEvent">Create New RSO Event</a>
 </p>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.EventName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StartTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StartDay)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StartMonth)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EventDesc)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Category)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ContactPhone)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ContactEmail)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Location)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {	
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.EventName) 
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartDay)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartMonth)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EventDesc)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Category)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ContactPhone)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ContactEmail)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Location.LocationName)
-            </td>
-			<td>
-				<a asp-area="" asp-controller="Comments" asp-action="Index" asp-route-id="@item.EventId">View Comments</a>
-			</td>
-        </tr>
-}
-    </tbody>
-</table>

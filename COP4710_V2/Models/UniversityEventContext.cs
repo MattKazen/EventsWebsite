@@ -310,9 +310,9 @@ namespace COP4710_V2.Models
             {
                 entity.HasKey(e => e.PrivateEventId);
 
-                entity.Property(e => e.PrivateEventId)
-                    .HasColumnName("Private_Event_ID")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.PrivateEventId).ValueGeneratedNever();
+
+                entity.Property(e => e.EventUniversityId).HasMaxLength(50);
 
                 entity.HasOne(d => d.PrivateEvent)
                     .WithOne(p => p.PrivEvents)
