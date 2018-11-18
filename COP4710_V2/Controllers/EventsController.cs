@@ -34,40 +34,30 @@ namespace COP4710_V2.Controllers
 			//Split events into Pending and nonPending
 			if (isUserSuper())
 			{
-				//Grabs all NonPending Events
-				var AllNonPendingEventContext = eventContext
-												.Include(e => e.Location)
-													.Where(e => !((bool)e.IsPending));
-
-				//Grabs all Pending Events (Only Super Admin needs to see)
-				var AllPendingEventContext = eventContext
-												.Include(e => e.Location)
-												.Where(e => ((bool)e.IsPending));
-
-				var UniversityPendingEventsContext = (from e in AllPendingEventContext
+				//Grabs All Events That were created by an admin from the same university
+				//as the Current SuperAdmin
+				var AllEventsFromUniversityContext = (from e in eventContext
 													  from a in _context.Admins
 													  from au in _context.AspNetUsers
 													  from u in _context.UserUniversity
 														 where e.ContactEmail == a.AdminEmail
 														 where a.AdminEmail == au.UserName
 														 where au.Id == u.StudentId
-														 where u.UniversityId == getUsersUniversityId()
-															select e)
-															.Include(e => e.Location);
-
-				var UniversityNonPendingEventsContext = (from e in AllNonPendingEventContext
-														 from a in _context.Admins
-														 from au in _context.AspNetUsers
-														 from u in _context.UserUniversity
-														  where e.ContactEmail == a.AdminEmail
-														  where a.AdminEmail == au.UserName
-														  where au.Id == u.StudentId
-														  where u.UniversityId == getUsersUniversityId()
+														 where u.UniversityId == UniversityId
 															select e)
 																.Include(e => e.Location);
+				
+				//Selects Events from above query where the event is NOT Pending
+				var UniversityNonPendingEventsContext = AllEventsFromUniversityContext
+															.Include(e => e.Location)
+																.Where(e => !(bool)e.IsPending);
 
+				//Selects Events from above query where the event IS Pending
+				var UniversityPendingEventsContext = AllEventsFromUniversityContext
+														.Include(e => e.Location)
+															.Where(e => (bool)e.IsPending);
 
-
+				ViewBag.UniversityId = UniversityId;
 
 				ViewBag.NonPendingEvents = await UniversityNonPendingEventsContext.ToListAsync();
 
