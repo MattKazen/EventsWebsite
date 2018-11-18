@@ -35,19 +35,43 @@ namespace COP4710_V2.Controllers
 			if (isUserSuper())
 			{
 				//Grabs all NonPending Events
-				var NonPendingEventContext = eventContext
-												
+				var AllNonPendingEventContext = eventContext
 												.Include(e => e.Location)
-												.Where(e => !((bool)e.IsPending));
-
-				ViewBag.NonPendingEvents = await NonPendingEventContext.ToListAsync();
+													.Where(e => !((bool)e.IsPending));
 
 				//Grabs all Pending Events (Only Super Admin needs to see)
-				var PendingEventContext = eventContext
+				var AllPendingEventContext = eventContext
 												.Include(e => e.Location)
 												.Where(e => ((bool)e.IsPending));
 
-				return View("EventsApprove", await PendingEventContext.ToListAsync());
+				var UniversityPendingEventsContext = (from e in AllPendingEventContext
+													  from a in _context.Admins
+													  from au in _context.AspNetUsers
+													  from u in _context.UserUniversity
+														 where e.ContactEmail == a.AdminEmail
+														 where a.AdminEmail == au.UserName
+														 where au.Id == u.StudentId
+														 where u.UniversityId == getUsersUniversityId()
+															select e)
+															.Include(e => e.Location);
+
+				var UniversityNonPendingEventsContext = (from e in AllNonPendingEventContext
+														 from a in _context.Admins
+														 from au in _context.AspNetUsers
+														 from u in _context.UserUniversity
+														  where e.ContactEmail == a.AdminEmail
+														  where a.AdminEmail == au.UserName
+														  where au.Id == u.StudentId
+														  where u.UniversityId == getUsersUniversityId()
+															select e)
+																.Include(e => e.Location);
+
+
+
+
+				ViewBag.NonPendingEvents = await UniversityNonPendingEventsContext.ToListAsync();
+
+				return View("EventsApprove", await UniversityPendingEventsContext.ToListAsync());
 			}
 
 			//Split Events into Public and Private for Users and admins
